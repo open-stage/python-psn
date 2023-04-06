@@ -15,7 +15,7 @@ python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs
 
 ```python
 import pypsn
-pypsn.main(callback)
+pypsn.receiver(callback).start()
 ```
 See examples folder for some implementation examples. 
 
@@ -23,10 +23,11 @@ See examples folder for some implementation examples.
 
 - This is a very early version, currently implemented:
     - Parsing
+    - Linux only
 
 ## Development
 
-This is very early stage, TODO: add threading support and improve initial module entry point.
+This is very early stage.
 
 ### Typing
 

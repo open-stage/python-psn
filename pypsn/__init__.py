@@ -4,6 +4,8 @@ import socket
 from struct import unpack
 from enum import IntEnum
 from typing import List
+import os
+from threading import Thread
 
 
 class psn_vector3:
@@ -121,11 +123,19 @@ class psn_tracker_chunk_info(IntEnum):
     PSN_DATA_TRACKER_TIMESTAMP = 0x0006
 
 
-def main(callback):
-    MCAST_GRP = "236.10.10.10"
-    MCAST_PORT = 56565
-    IP_ADDR = "10.0.0.1"
-    IP_ADDR = "192.168.20.177"  # TODO: fixme
+def join_multicast_win(MCAST_GRP, MCAST_PORT, if_ip):
+    mcastsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    mcastsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    mcastsock.setsockopt(
+        socket.SOL_IP,
+        socket.IP_ADD_MEMBERSHIP,
+        socket.inet_aton(MCAST_GRP) + socket.inet_aton(if_ip),
+    )
+    mcastsock.bind(("", MCAST_PORT))
+    return mcastsock
+
+
+def join_multicast_linux(MCAST_GRP, MCAST_PORT, if_ip):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     try:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -137,7 +147,7 @@ def main(callback):
     sock.bind((MCAST_GRP, MCAST_PORT))
     print(socket.gethostname())
     host = socket.gethostbyname(socket.gethostname())
-    host = IP_ADDR
+    host = if_ip
     print(host)
     sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
     sock.setsockopt(
@@ -145,17 +155,57 @@ def main(callback):
         socket.IP_ADD_MEMBERSHIP,
         socket.inet_aton(MCAST_GRP) + socket.inet_aton(host),
     )
+    return sock
 
-    while 1:
-        try:
-            data, addr = sock.recvfrom(1024)
-        except Exception as e:
-            print(e)
-        else:
-            psn_data = parse_psn_packet(data)
-            if isinstance(psn_data, psn_data_packet):
-                print(psn_data.trackers[0].pos)
-                callback(psn_data)
+
+def determine_os():
+    if os.name == "nt":
+        return "Operating system not supported"
+        # return str(os.name)
+
+    elif os.name == "posix":
+        return str(os.name)
+
+    else:
+        return "Operating system not supported"
+
+
+class receiver(Thread):
+    def __init__(self, callback, ip_addr):
+        Thread.__init__(self)
+        self.callback = callback
+        self.socket = init(ip_addr)
+
+    def run(self):
+        data = ""
+        if self.socket is None:
+            return
+        while 1:
+            try:
+                data, addr = self.socket.recvfrom(1024)
+            except Exception as e:
+                print(e)
+            else:
+                psn_data = parse_psn_packet(data)
+                if isinstance(psn_data, psn_data_packet):
+                    print(psn_data.trackers[0].pos)
+                    self.callback(psn_data)
+
+
+def init(ip_addr):
+    MCAST_GRP = "236.10.10.10"
+    MCAST_PORT = 56565
+    IP_ADDR = ip_addr
+    sock = None
+    if determine_os() == "nt":
+        sock = join_multicast_win(MCAST_GRP, MCAST_PORT, IP_ADDR)
+    elif determine_os() == "posix":
+        sock = join_multicast_linux(MCAST_GRP, MCAST_PORT, IP_ADDR)
+
+    if sock is None:
+        print("error getting network interface")
+        return
+    return sock
 
 
 def parse_psn_packet(buffer):
@@ -277,7 +327,3 @@ def parse_data_tracker_list(buffer):
                     # print(tracker_chunk_info(chunk_id).name, timestamp)
         trackers.append(tracker)
     return trackers
-
-
-if __name__ == "__main__":
-    main(print)
