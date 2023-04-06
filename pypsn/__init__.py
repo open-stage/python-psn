@@ -20,6 +20,9 @@ class psn_vector3:
     def __eq__(self, other) -> bool:
         return self.x == other.x and self.y == other.y and self.z == other.z
 
+    def __iter__(self):
+        return iter((self.x, self.y, self.z))
+
 
 class psn_info:
     def __init__(

@@ -2,6 +2,8 @@
 import sacn
 import pypsn
 
+# Note: not tested
+
 sender = sacn.sACNsender()
 
 
