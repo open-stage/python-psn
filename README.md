@@ -1,6 +1,6 @@
 # python-psn
 
-Quick and dirty rudimentary Python parsing library for PSN - [PosiStageNet](https://posistage.net/)
+Python only parsing library for PSN - [PosiStageNet](https://posistage.net/)
 
 PSN specification as per [GitHub repo](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
 
@@ -22,8 +22,9 @@ See examples folder for some implementation examples.
 ## Status
 
 - This is a very early version, currently implemented:
+    - PSN V2
     - Parsing
-    - Linux only
+    - Linux
 
 ## Development
 

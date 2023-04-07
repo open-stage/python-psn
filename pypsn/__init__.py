@@ -6,6 +6,7 @@ from enum import IntEnum
 from typing import List
 import os
 from threading import Thread
+import binascii
 
 
 class psn_vector3:
@@ -191,7 +192,6 @@ class receiver(Thread):
             else:
                 psn_data = parse_psn_packet(data)
                 if isinstance(psn_data, psn_data_packet):
-                    print(psn_data.trackers[0].pos)
                     self.callback(psn_data)
 
 
@@ -218,7 +218,7 @@ def parse_psn_packet(buffer):
     elif psn_id in iter(psn_v2_chunk):
         chunk_id, chunk_buffer, rest = parse_chunk(buffer)
         if chunk_id == psn_v2_chunk.PSN_INFO_PACKET:
-            parse_info(chunk_buffer)
+            return parse_info(chunk_buffer)
         elif chunk_id == psn_v2_chunk.PSN_DATA_PACKET:
             return parse_data(chunk_buffer)
 
@@ -235,55 +235,47 @@ def parse_chunk(buffer):
 
 
 def parse_info(buffer):
-    print("parsing info", len(buffer))
     while buffer:
         chunk_id, chunk_buffer, buffer = parse_chunk(buffer)
         if chunk_id == psn_info_chunk.PSN_INFO_PACKET_HEADER:
-            parse_header(chunk_buffer)
+            info = parse_header(chunk_buffer)
         elif chunk_id == psn_info_chunk.PSN_INFO_SYSTEM_NAME:
-            parse_system_name(chunk_buffer)
+            system_name = parse_system_name(chunk_buffer)
         elif chunk_id == psn_info_chunk.PSN_INFO_TRACKER_LIST:
-            parse_info_tracker_list(chunk_buffer)
+            trackers = parse_info_tracker_list(chunk_buffer)
+    packet = psn_info_packet(info, system_name, trackers)
+    return packet
 
 
 def parse_data(buffer):
-    # print("parsing data", len(buffer))
     while buffer:
         chunk_id, chunk_buffer, buffer = parse_chunk(buffer)
         if chunk_id == psn_data_chunk.PSN_DATA_PACKET_HEADER:
-            # print("got data header")
             info = parse_header(chunk_buffer)
         elif chunk_id == psn_data_chunk.PSN_DATA_TRACKER_LIST:
-            # print("got tracker list", len(chunk_buffer))
             trackers = parse_data_tracker_list(chunk_buffer)
     packet = psn_data_packet(info, trackers)
     return packet
 
 
 def parse_header(buffer):
-    # print("parsing header", len(buffer))
-
     timestamp, version_high, version_low, frame_id, packet_count = unpack(
-        "<LHHHH", buffer
+        "<QBBBB", buffer
     )
     info = psn_info(timestamp, version_high, version_low, frame_id, packet_count)
-    # print(timestamp, version_high, version_low, frame_id, packet_count)
     return info
 
 
 def parse_system_name(buffer):
-    # print("parsing system name", len(buffer))
     # TODO: may cause unicode issues?
     system_name = buffer
-    # print("SYSTEM NAME", system_name)
+    return system_name
 
 
 def parse_info_tracker_list(buffer):
-    # print("parsing info tracker list", len(buffer))
+    trackers: List["psn_tracker_info"] = []
     while buffer:
         tracker_id, chunk_buffer, buffer = parse_chunk(buffer)
-
-        # print(hex(tracker_id))
 
         if len(chunk_buffer) > 0:
             while chunk_buffer:
@@ -291,24 +283,24 @@ def parse_info_tracker_list(buffer):
                 if chunk_id == psn_tracker_list_chunk.PSN_INFO_TRACKER_NAME:
                     # TODO: encoding issues?
                     tracker_name = info_buffer
-                    # print(tracker_name)
+                    tracker = psn_tracker_info(tracker_id, tracker_name)
+
+        trackers.append(tracker)
+    return trackers
 
 
 def parse_data_tracker_list(buffer):
-    # print("parsing data tracker list", len(buffer))
     trackers: List["psn_tracker"] = []
     while buffer:
         tracker_id, chunk_buffer, buffer = parse_chunk(buffer)
 
         tracker = psn_tracker(tracker_id)
-        # print(hex(tracker_id))
 
         if len(chunk_buffer) > 0:
             while chunk_buffer:
                 chunk_id, info_buffer, chunk_buffer = parse_chunk(chunk_buffer)
                 if chunk_id in iter(psn_tracker_chunk):
                     vector = psn_vector3(*unpack("<fff", info_buffer))
-                    # print(tracker_chunk(chunk_id).name, x, y, z)
                     if chunk_id == psn_tracker_chunk.PSN_DATA_TRACKER_POS:
                         tracker.pos = vector
                     elif chunk_id == psn_tracker_chunk.PSN_DATA_TRACKER_ORI:
@@ -323,10 +315,8 @@ def parse_data_tracker_list(buffer):
                 elif chunk_id == psn_tracker_chunk_info.PSN_DATA_TRACKER_STATUS:
                     status = unpack("<f", info_buffer)[0]
                     tracker.status = status
-                    # print(tracker_chunk_info(chunk_id).name, status)
                 elif chunk_id == psn_tracker_chunk_info.PSN_DATA_TRACKER_TIMESTAMP:
                     timestamp = unpack("<L", info_buffer)[0]
                     tracker.timestamp = timestamp
-                    # print(tracker_chunk_info(chunk_id).name, timestamp)
         trackers.append(tracker)
     return trackers
