@@ -15,7 +15,17 @@ python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs
 
 ```python
 import pypsn
-pypsn.receiver(callback).start()
+
+def callback_function(data):
+    if isinstance(data, pypsn_module.psn_data_packet):
+        print(data.trackers[0].pos)
+
+    if isinstance(data, pypsn_module.psn_info_packet):
+        print(data.name)
+        print(data.trackers[0].tracker_name)
+
+pypsn.receiver(callback_function, "10.0.0.1").start()
+
 ```
 See examples folder for some implementation examples. 
 

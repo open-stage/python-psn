@@ -3,6 +3,7 @@ import sacn
 import pypsn
 
 # Note: not tested
+# Handle if data doesn't come in time, to ensure DMX transmission
 
 sender = sacn.sACNsender()
 
@@ -22,13 +23,14 @@ def start_psn():
 
 
 def fill_dmx(psn_data):
-    dmx = psn_data.trackers[0].pos
-    dmx_data = [0] * 512
-    dmx_data[0] = int(abs(dmx.x))
-    dmx_data[1] = int(abs(dmx.y))
-    dmx_data[2] = int(abs(dmx.z))
+    if isinstance(psn_data, pypsn.psn_data_packet):
+        position = psn_data.trackers[0].pos
+        dmx_data = [0] * 512
+        dmx_data[0] = int(abs(position.x))
+        dmx_data[1] = int(abs(position.y))
+        dmx_data[2] = int(abs(position.z))
 
-    sender[1].dmx_data = dmx_data
+        sender[1].dmx_data = dmx_data
 
 
 if __name__ == "__main__":
