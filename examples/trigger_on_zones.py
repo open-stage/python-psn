@@ -3,16 +3,26 @@ import sacn
 import pypsn
 import math
 
-# Note: not tested
-# Handle if data doesn't come in time, to ensure DMX transmission
+# Sends sACN DMX when PSN coordinates are near or on given coordinates.
 
 sender = sacn.sACNsender()
 
+settings = {}
+settings["universe"] = 1
+settings["ip_addr"] = "10.0.0.1"
+
+zones = [
+    [4.33588981628418, -18.41270637512207],
+    [2.6540772914886475, -18.26753044128418],
+    [0.18828973174095154, -19.134809494018555],
+]
+
 
 def start_dmx():
+    universe = settings["universe"]
     sender.start()  # start the sending thread
-    sender.activate_output(1)  # start sending out data in the 1st universe
-    sender[1].multicast = True  # set multicast to True
+    sender.activate_output(universe)  # start sending out data in the 1st universe
+    sender[universe].multicast = True  # set multicast to True
 
 
 def stop_dmx():
@@ -20,17 +30,16 @@ def stop_dmx():
 
 
 def start_psn():
-    pypsn.receiver(check_zones, "10.0.0.1").start()
+    pypsn.receiver(check_zones, settings["ip_addr"]).start()
 
 
 def check_zones(psn_data):
     if isinstance(psn_data, pypsn.psn_data_packet):
-        zones = [[1, 1], [2, 2], [3, 3]]
-        x, y, z = psn_data.trackers[0].pos
+        x, z, y = psn_data.trackers[0].pos  # Some senders/receivers have flipped xyz...
         pos = [x, y]
-        radius = 100
+        radius = 1.00
         mult = 255 / radius
-        min_distance = 70
+        min_distance = 0.70
         dmx_data = [0] * 512
         for idx, zone in enumerate(zones):
             distance = math.dist(zone, pos) - min_distance
@@ -43,8 +52,7 @@ def check_zones(psn_data):
                 value = 255
             dmx_data[idx] = value
 
-        sender[1].dmx_data = dmx_data
-
+        sender[settings["universe"]].dmx_data = dmx_data
 
 if __name__ == "__main__":
     start_dmx()

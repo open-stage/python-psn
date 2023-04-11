@@ -6,7 +6,6 @@ from enum import IntEnum
 from typing import List
 import os
 from threading import Thread
-import binascii
 
 
 class psn_vector3:
@@ -127,19 +126,19 @@ class psn_tracker_chunk_info(IntEnum):
     PSN_DATA_TRACKER_TIMESTAMP = 0x0006
 
 
-def join_multicast_win(MCAST_GRP, MCAST_PORT, if_ip):
-    mcastsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    mcastsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    mcastsock.setsockopt(
+def join_multicast_windows(MCAST_GRP, MCAST_PORT, if_ip):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.setsockopt(
         socket.SOL_IP,
         socket.IP_ADD_MEMBERSHIP,
         socket.inet_aton(MCAST_GRP) + socket.inet_aton(if_ip),
     )
-    mcastsock.bind(("", MCAST_PORT))
-    return mcastsock
+    sock.bind(("", MCAST_PORT))
+    return sock
 
 
-def join_multicast_linux(MCAST_GRP, MCAST_PORT, if_ip):
+def join_multicast_posix(MCAST_GRP, MCAST_PORT, if_ip):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     try:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -149,23 +148,18 @@ def join_multicast_linux(MCAST_GRP, MCAST_PORT, if_ip):
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
 
     sock.bind((MCAST_GRP, MCAST_PORT))
-    print(socket.gethostname())
-    host = socket.gethostbyname(socket.gethostname())
-    host = if_ip
-    print(host)
-    sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(host))
+    sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(if_ip))
     sock.setsockopt(
         socket.SOL_IP,
         socket.IP_ADD_MEMBERSHIP,
-        socket.inet_aton(MCAST_GRP) + socket.inet_aton(host),
+        socket.inet_aton(MCAST_GRP) + socket.inet_aton(if_ip),
     )
     return sock
 
 
 def determine_os():
     if os.name == "nt":
-        return "Operating system not supported"
-        # return str(os.name)
+        return str(os.name)
 
     elif os.name == "posix":
         return str(os.name)
@@ -175,10 +169,10 @@ def determine_os():
 
 
 class receiver(Thread):
-    def __init__(self, callback, ip_addr):
+    def __init__(self, callback, ip_addr, mcast_port=56565):
         Thread.__init__(self)
         self.callback = callback
-        self.socket = init(ip_addr)
+        self.socket = get_socket(ip_addr, mcast_port)
 
     def run(self):
         data = ""
@@ -195,15 +189,15 @@ class receiver(Thread):
                     self.callback(psn_data)
 
 
-def init(ip_addr):
+def get_socket(ip_addr, mcast_port):
     MCAST_GRP = "236.10.10.10"
-    MCAST_PORT = 56565
+    MCAST_PORT = mcast_port
     IP_ADDR = ip_addr
     sock = None
     if determine_os() == "nt":
-        sock = join_multicast_win(MCAST_GRP, MCAST_PORT, IP_ADDR)
+        sock = join_multicast_windows(MCAST_GRP, MCAST_PORT, IP_ADDR)
     elif determine_os() == "posix":
-        sock = join_multicast_linux(MCAST_GRP, MCAST_PORT, IP_ADDR)
+        sock = join_multicast_posix(MCAST_GRP, MCAST_PORT, IP_ADDR)
 
     if sock is None:
         print("error getting network interface")

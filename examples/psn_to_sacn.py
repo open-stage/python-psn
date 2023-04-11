@@ -2,8 +2,7 @@
 import sacn
 import pypsn
 
-# Note: not tested
-# Handle if data doesn't come in time, to ensure DMX transmission
+# Simple forwarder of PSN to DMX. Turns all coordinates to positive ints...
 
 sender = sacn.sACNsender()
 

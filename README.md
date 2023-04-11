@@ -31,16 +31,12 @@ See examples folder for some implementation examples.
 
 ## Status
 
-- This is a very early version, currently implemented:
+- Currently implemented:
     - PSN V2
     - Parsing
-    - Linux
+    - Callback for data packet
 
-## Development
-
-This is very early stage.
-
-### Typing
+### Type hints
 
 * At this point, the `--no-strict-optional` is needed for mypy tests to pass:
 
