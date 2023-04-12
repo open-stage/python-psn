@@ -185,8 +185,7 @@ class receiver(Thread):
                 print(e)
             else:
                 psn_data = parse_psn_packet(data)
-                if isinstance(psn_data, psn_data_packet):
-                    self.callback(psn_data)
+                self.callback(psn_data)
 
 
 def get_socket(ip_addr, mcast_port):
@@ -278,8 +277,7 @@ def parse_info_tracker_list(buffer):
                     # TODO: encoding issues?
                     tracker_name = info_buffer
                     tracker = psn_tracker_info(tracker_id, tracker_name)
-
-        trackers.append(tracker)
+                    trackers.append(tracker)
     return trackers
 
 

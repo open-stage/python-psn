@@ -1,6 +1,6 @@
 # python-psn
 
-Python only parsing library for PSN - [PosiStageNet](https://posistage.net/)
+Python only parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
 
 PSN specification as per [GitHub repo](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
 
@@ -18,23 +18,29 @@ import pypsn
 
 def callback_function(data):
     if isinstance(data, pypsn_module.psn_data_packet):
-        print(data.trackers[0].pos)
+        for tracker in data.trackers:
+            print(tracker.pos)
 
     if isinstance(data, pypsn_module.psn_info_packet):
         print(data.name)
-        print(data.trackers[0].tracker_name)
+        for tracker in data.trackers:
+            print(tracker.tracker_name)
 
 pypsn.receiver(callback_function, "10.0.0.1").start()
 
+pypsn.receiver(callback_function, "10.0.0.1").stop()
+
 ```
-See examples folder for some implementation examples. 
+See examples folder for some more examples. 
 
-## Status
+## Development, status
 
-- Currently implemented:
-    - PSN V2
-    - Parsing
-    - Callback for data packet
+- Supporting PSN V2
+- Parsing only, not sending
+- Using threading module
+- Linux, Windows and macOS tested
+- Typed
+- Initial pytest testing provided together with CI/CD setup
 
 ### Type hints
 
@@ -55,5 +61,3 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 ```bash
 pytest --mypy -m mypy pypsn/*py
 ```
-
-
