@@ -1,0 +1,4 @@
+universe: 1
+min_distance: 0.3
+radius: 0.8
+ip_addr: 10.0.0.1

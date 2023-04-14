@@ -169,20 +169,29 @@ def determine_os():
 
 
 class receiver(Thread):
-    def __init__(self, callback, ip_addr, mcast_port=56565):
+    def __init__(self, callback, ip_addr, mcast_port=56565, timeout=None):
         Thread.__init__(self)
         self.callback = callback
+        self.running = True
         self.socket = get_socket(ip_addr, mcast_port)
+        if timeout is not None and self.socket is not None:
+            self.socket.settimeout(timeout)
+
+    def stop(self):
+        self.running = False
+        if self.socket is not None:
+            self.socket.close()
+        self.join()
 
     def run(self):
         data = ""
         if self.socket is None:
             return
-        while 1:
+        while self.running:
             try:
-                data, addr = self.socket.recvfrom(1024)
+                data, addr = self.socket.recvfrom(1500)
             except Exception as e:
-                print(e)
+                print("Network data error:", e)
             else:
                 psn_data = parse_psn_packet(data)
                 self.callback(psn_data)

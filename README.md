@@ -16,19 +16,22 @@ python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs
 ```python
 import pypsn
 
+# define a callback function
 def callback_function(data):
-    if isinstance(data, pypsn_module.psn_data_packet):
-        for tracker in data.trackers:
-            print(tracker.pos)
+    if isinstance(data, pypsn_module.psn_data_packet): # packet type: psn.psn_data_packet
+        for tracker in data.trackers: # loop through all trackers
+            print(tracker.pos) # print the received coordinates
 
-    if isinstance(data, pypsn_module.psn_info_packet):
-        print(data.name)
-        for tracker in data.trackers:
-            print(tracker.tracker_name)
+    if isinstance(data, pypsn_module.psn_info_packet): # packet type: psn.psn_info_packet
+        print(data.name) # print server name
+        for tracker in data.trackers: # loop through all trackers
+            print(tracker.tracker_name) # print the received tracker name
 
-pypsn.receiver(callback_function, "10.0.0.1").start()
+# provide a callback function and an IP address
+receiver = pypsn.receiver(callback_function, "10.0.0.1")
+receiver.start()  # start the receiving thread
 
-pypsn.receiver(callback_function, "10.0.0.1").stop()
+receiver.stop() # stop receiving
 
 ```
 See examples folder for some more examples. 
