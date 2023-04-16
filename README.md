@@ -1,13 +1,17 @@
 # python-psn
 
-Python only parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
+Pure Python parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
 
 PSN specification as per [GitHub repo](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
 
 ## Installation
 
-To install from git, run pip:
-```python
+```bash
+pip install pypsn
+```
+
+To install latest master from git, run pip:
+```bash
 python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs/heads/master
 ```
 
@@ -54,7 +58,7 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 ```
 ### Format
 
-- to format, use `black`
+- to format, use [black](https://pypi.org/project/black/)
 
 ### Testing
 
@@ -63,4 +67,27 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 
 ```bash
 pytest --mypy -m mypy pypsn/*py
+```
+
+## Releasing to pypi
+
+* update CHANGELOG.md
+* increment version in setup.py
+* `git tag versionCode`
+* `git push origin/versionCode`
+* generate wheel:
+
+```bash
+python3 setup.py sdist bdist_wheel
+```
+* test upload to TestPypi with twine:
+
+```bash
+python -m twine upload --repository testpypi dist/* --verbose
+```
+
+* release to official pypi:
+
+```bash
+python -m twine upload dist/*
 ```
