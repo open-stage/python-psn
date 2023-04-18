@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pypsn",
-    version="0.1.0",
+    version="0.1.1",
     long_description=long_description,
     description="PosiStageNet parser",
     license="MIT",
@@ -16,6 +16,6 @@ setup(
     packages=["pypsn"],
     project_urls={
         "Source": "https://github.com/open-stage/python-psn",
-        "Changelog": "https://github.com/open-stage/python-psn/CHANGELOG.md",
+        "Changelog": "https://github.com/open-stage/python-psn/blob/master/CHANGELOG.md",
     },
 )

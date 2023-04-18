@@ -2,7 +2,9 @@
 
 Pure Python parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
 
-PSN specification as per [GitHub repo](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
+[Official PSN specification](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
+
+[Source code](https://github.com/open-stage/python-psn)
 
 ## Installation
 
@@ -10,7 +12,7 @@ PSN specification as per [GitHub repo](https://github.com/vyv/psn-cpp/blob/maste
 pip install pypsn
 ```
 
-To install latest master from git, run pip:
+To install latest master from git via pip:
 ```bash
 python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs/heads/master
 ```
@@ -46,7 +48,7 @@ See examples folder for some more examples.
 - Parsing only, not sending
 - Using threading module
 - Linux, Windows and macOS tested
-- Typed
+- Typed, no-strict
 - Initial pytest testing provided together with CI/CD setup
 
 ### Type hints
@@ -69,25 +71,3 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 pytest --mypy -m mypy pypsn/*py
 ```
 
-## Releasing to pypi
-
-* update CHANGELOG.md
-* increment version in setup.py
-* `git tag versionCode`
-* `git push origin/versionCode`
-* generate wheel:
-
-```bash
-python3 setup.py sdist bdist_wheel
-```
-* test upload to TestPypi with twine:
-
-```bash
-python -m twine upload --repository testpypi dist/* --verbose
-```
-
-* release to official pypi:
-
-```bash
-python -m twine upload dist/*
-```

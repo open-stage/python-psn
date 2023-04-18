@@ -15,7 +15,7 @@ class psn_vector3:
         self.z = z
 
     def __str__(self):
-        return f"{self.x}, {self.y} {self.z}"
+        return f"{self.x}, {self.y}, {self.z}"
 
     def __eq__(self, other) -> bool:
         return self.x == other.x and self.y == other.y and self.z == other.z
@@ -299,9 +299,9 @@ def parse_data_tracker_list(buffer):
 
         if len(chunk_buffer) > 0:
             while chunk_buffer:
-                chunk_id, info_buffer, chunk_buffer = parse_chunk(chunk_buffer)
+                chunk_id, data_buffer, chunk_buffer = parse_chunk(chunk_buffer)
                 if chunk_id in iter(psn_tracker_chunk):
-                    vector = psn_vector3(*unpack("<fff", info_buffer))
+                    vector = psn_vector3(*unpack("<fff", data_buffer))
                     if chunk_id == psn_tracker_chunk.PSN_DATA_TRACKER_POS:
                         tracker.pos = vector
                     elif chunk_id == psn_tracker_chunk.PSN_DATA_TRACKER_ORI:
@@ -314,10 +314,10 @@ def parse_data_tracker_list(buffer):
                         tracker.trgtpos = vector
 
                 elif chunk_id == psn_tracker_chunk_info.PSN_DATA_TRACKER_STATUS:
-                    status = unpack("<f", info_buffer)[0]
+                    status = unpack("<f", data_buffer)[0]
                     tracker.status = status
                 elif chunk_id == psn_tracker_chunk_info.PSN_DATA_TRACKER_TIMESTAMP:
-                    timestamp = unpack("<L", info_buffer)[0]
+                    timestamp = unpack("<L", data_buffer)[0]
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
