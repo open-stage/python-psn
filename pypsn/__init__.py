@@ -169,7 +169,7 @@ def determine_os():
 
 
 class receiver(Thread):
-    def __init__(self, callback, ip_addr, mcast_port=56565, timeout=None):
+    def __init__(self, callback, ip_addr="0.0.0.0", mcast_port=56565, timeout=None):
         Thread.__init__(self)
         self.callback = callback
         self.running = True

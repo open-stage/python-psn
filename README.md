@@ -34,7 +34,7 @@ def callback_function(data):
             print(tracker.tracker_name) # print the received tracker name
 
 # provide a callback function and an IP address
-receiver = pypsn.receiver(callback_function, "10.0.0.1")
+receiver = pypsn.receiver(callback_function)
 receiver.start()  # start the receiving thread
 
 receiver.stop() # stop receiving
