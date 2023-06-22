@@ -10,6 +10,7 @@ Pure Python parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
 
 [![Pytest](https://github.com/open-stage/python-psn/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/open-stage/python-psn/actions/workflows/run-tests.yaml)
 
+[![Check links in markdown](https://github.com/open-stage/python-psn/actions/workflows/check-links.yaml/badge.svg)](https://github.com/open-stage/python-psn/actions/workflows/check-links.yaml)
 
 ## Installation
 
