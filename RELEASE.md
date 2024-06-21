@@ -2,11 +2,14 @@
 
 - update CHANGELOG.md
 - increment version in setup.py
+- push to master (via PR)
 - `git tag versionCode`
-- `git push origin/versionCode`
+- `git push origin versionCode`
+
 - generate wheel:
 
 ```bash
+python -m pip install setuptools wheel
 python3 setup.py sdist bdist_wheel
 ```
 

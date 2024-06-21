@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pypsn",
-    version="0.2",
+    version="0.2.1",
     long_description=long_description,
     description="PosiStageNet parser",
     license="MIT",
