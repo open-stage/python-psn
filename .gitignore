@@ -3,4 +3,5 @@ dist
 pypsn.egg-info
 __pycache__
 .python-version
+.pytest_cache/
 devel/
