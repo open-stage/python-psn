@@ -169,7 +169,7 @@ def determine_os():
 
 
 class receiver(Thread):
-    def __init__(self, callback, ip_addr="0.0.0.0", mcast_port=56565, timeout=None):
+    def __init__(self, callback, ip_addr="0.0.0.0", mcast_port=56565, timeout=2):
         Thread.__init__(self)
         self.callback = callback
         self.running = True
@@ -240,7 +240,7 @@ def parse_info(buffer):
     while buffer:
         chunk_id, chunk_buffer, buffer = parse_chunk(buffer)
         if chunk_id == psn_info_chunk.PSN_INFO_PACKET_HEADER:
-            info = parse_header(chunk_buffer)
+            info = parse_header(chunk_buffer[:12])
         elif chunk_id == psn_info_chunk.PSN_INFO_SYSTEM_NAME:
             system_name = parse_system_name(chunk_buffer)
         elif chunk_id == psn_info_chunk.PSN_INFO_TRACKER_LIST:
@@ -253,7 +253,7 @@ def parse_data(buffer):
     while buffer:
         chunk_id, chunk_buffer, buffer = parse_chunk(buffer)
         if chunk_id == psn_data_chunk.PSN_DATA_PACKET_HEADER:
-            info = parse_header(chunk_buffer)
+            info = parse_header(chunk_buffer[:12])
         elif chunk_id == psn_data_chunk.PSN_DATA_TRACKER_LIST:
             trackers = parse_data_tracker_list(chunk_buffer)
     packet = psn_data_packet(info, trackers)
@@ -261,9 +261,7 @@ def parse_data(buffer):
 
 
 def parse_header(buffer):
-    timestamp, version_high, version_low, frame_id, packet_count = unpack(
-        "<QBBBB", buffer
-    )
+    timestamp, version_high, version_low, frame_id, packet_count = unpack("<QBBBB", buffer)
     info = psn_info(timestamp, version_high, version_low, frame_id, packet_count)
     return info
 
@@ -317,7 +315,7 @@ def parse_data_tracker_list(buffer):
                     status = unpack("<f", data_buffer)[0]
                     tracker.status = status
                 elif chunk_id == psn_tracker_chunk_info.PSN_DATA_TRACKER_TIMESTAMP:
-                    timestamp = unpack("<L", data_buffer)[0]
+                    timestamp = unpack("<L", data_buffer[:4])[0]
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
