@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="pypsn"
+dynamic = ["version"]
+readme = "README.md"
+description="PosiStageNet parser"
+requires-python = ">=3.8"
+authors = [
+  {name = "vanous", email = "noreply@nodomain.com"},
+]
+maintainers = [
+  {name = "vanous", email = "noreply@nodomain.com"},
+]
+keywords = ["PSN", "PosiStageNet"]
+license = {text = "MIT License"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[tool.setuptools]
+packages = ["pypsn"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pypsn.__version__"}
+
+[project.urls]
+Repository = "https://github.com/open-stage/python-psn"
+Changelog = "https://github.com/open-stage/python-psn/blob/master/CHANGELOG.md"
+

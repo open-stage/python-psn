@@ -7,6 +7,7 @@ from typing import List
 import os
 from threading import Thread
 
+__version__ = "0.2.3"
 
 class psn_vector3:
     def __init__(self, x: float, y: float, z: float):
