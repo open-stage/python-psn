@@ -20,6 +20,9 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python"
 ]
+dependencies = [
+  "multicast_expert>=1.4.0",
+]
 
 [tool.setuptools]
 packages = ["pypsn"]

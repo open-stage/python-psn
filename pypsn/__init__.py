@@ -1,13 +1,14 @@
 #!/bin/env python3
 
 import socket
-from struct import unpack
+from struct import pack, unpack
 from enum import IntEnum
 from typing import List
 import os
 from threading import Thread
+import multicast_expert
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 
 class psn_vector3:
     def __init__(self, x: float, y: float, z: float):
@@ -320,3 +321,165 @@ def parse_data_tracker_list(buffer):
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
+
+
+def prepare_psn_info_packet_bytes(
+    info_packet: psn_info_packet
+):
+    trackers_packet_bytes = b''
+    tot_enc_tracker_name_length = 0
+
+    for tracker in info_packet.trackers:
+        encoded_tracker_name = str.encode(tracker.tracker_name)
+        tracker_name_len = len(encoded_tracker_name)
+
+        tot_enc_tracker_name_length = (
+            tot_enc_tracker_name_length
+            + tracker_name_len + 16
+        )
+        trackers_packet_bytes = (
+            trackers_packet_bytes
+            + pack(
+                "<HHHH" + str(tracker_name_len) + "s",
+                tracker.tracker_id,
+                tracker_name_len + 4,
+                psn_tracker_list_chunk.PSN_INFO_TRACKER_NAME,
+                tracker_name_len,
+                encoded_tracker_name,
+            )
+        )
+    trackers_packet_bytes = (
+        pack(
+            "<HH",
+            psn_info_chunk.PSN_INFO_TRACKER_LIST,
+            4 + tot_enc_tracker_name_length + 4
+        )
+        + trackers_packet_bytes
+    )
+
+    encoded_system_name = str.encode(info_packet.name)
+    system_name_lenght = len(encoded_system_name)
+    info_packet_bytes = (
+        pack(
+            (
+                "<HHHHQBBBBHH"
+                + str(system_name_lenght)
+                + "s"
+            ),
+            psn_v2_chunk.PSN_INFO_PACKET,
+            (
+                20 + system_name_lenght + tot_enc_tracker_name_length
+            ),
+            psn_info_chunk.PSN_INFO_PACKET_HEADER,
+            12,
+            info_packet.info.timestamp,
+            info_packet.info.version_high,
+            info_packet.info.version_low,
+            info_packet.info.frame_id,
+            info_packet.info.packet_count,
+            psn_info_chunk.PSN_INFO_SYSTEM_NAME,
+            system_name_lenght,
+            encoded_system_name
+        )
+        + trackers_packet_bytes
+    )
+
+    return info_packet_bytes
+
+
+def prepare_psn_data_packet_bytes(
+    data_packet: psn_data_packet
+):
+    trackers_packet_bytes = b''
+    tot_enc_tracker_length = 0
+
+    for tracker in data_packet.trackers:
+        tot_enc_tracker_length = (
+            tot_enc_tracker_length
+            + 100  # (10 * 4) + (5 * 12)
+        )
+        trackers_packet_bytes = (
+            trackers_packet_bytes
+            + pack(
+                "<HHHHfffHHfffHHfffHHfffHHfffHHfHHL",
+                tracker.id,
+                96,  # (9 * 4) + (5 * 12)
+                psn_tracker_chunk.PSN_DATA_TRACKER_POS,
+                12,
+                tracker.pos.x,
+                tracker.pos.y,
+                tracker.pos.z,
+                psn_tracker_chunk.PSN_DATA_TRACKER_ORI,
+                12,
+                tracker.ori.x,
+                tracker.ori.y,
+                tracker.ori.z,
+                psn_tracker_chunk.PSN_DATA_TRACKER_ACCEL,
+                12,
+                tracker.accel.x,
+                tracker.accel.y,
+                tracker.accel.z,
+                psn_tracker_chunk.PSN_DATA_TRACKER_SPEED,
+                12,
+                tracker.speed.x,
+                tracker.speed.y,
+                tracker.speed.z,
+                psn_tracker_chunk.PSN_DATA_TRACKER_TRGTPOS,
+                12,
+                tracker.trgtpos.x,
+                tracker.trgtpos.y,
+                tracker.trgtpos.z,
+                psn_tracker_chunk_info.PSN_DATA_TRACKER_STATUS,
+                4,
+                tracker.status,
+                psn_tracker_chunk_info.PSN_DATA_TRACKER_TIMESTAMP,
+                4,
+                tracker.timestamp,
+            )
+        )
+    trackers_packet_bytes = (
+        pack(
+            "<HH",
+            psn_data_chunk.PSN_DATA_TRACKER_LIST,
+            4 + tot_enc_tracker_length
+        )
+        + trackers_packet_bytes
+    )
+
+    data_packet_bytes = (
+        pack(
+            (
+                "<HHHHQBBBB"
+            ),
+            psn_v2_chunk.PSN_DATA_PACKET,
+            (
+                20 + tot_enc_tracker_length
+            ),
+            psn_data_chunk.PSN_DATA_PACKET_HEADER,
+            12,
+            data_packet.info.timestamp,
+            data_packet.info.version_high,
+            data_packet.info.version_low,
+            data_packet.info.frame_id,
+            data_packet.info.packet_count
+        )
+        + trackers_packet_bytes
+    )
+
+    return data_packet_bytes
+
+
+def send_psn_packet(
+    psn_packet,
+    mcast_ips=['236.10.10.10'],
+    ip_addr="0.0.0.0",
+    mcast_port=56565
+):
+    with multicast_expert.McastTxSocket(
+        socket.AF_INET,
+        mcast_ips=mcast_ips,
+        iface_ip=ip_addr
+    ) as mcast_tx_sock:
+
+        for mcast_ip in mcast_ips:
+            mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))
