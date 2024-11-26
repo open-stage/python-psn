@@ -66,7 +66,7 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 ```
 ### Format
 
-- to format, use [black](https://pypi.org/project/black/)
+- To format, use [ruff](https://docs.astral.sh/ruff/)
 
 ### Testing
 

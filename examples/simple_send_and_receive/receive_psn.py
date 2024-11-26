@@ -1,6 +1,6 @@
 #! /bin/env python3
 """
-    Usage: python receive_psn.py 192.168.1.11 <--- change IP address
+Usage: python receive_psn.py 192.168.1.11 <--- change IP address
 """
 
 import sys
@@ -43,13 +43,20 @@ def callback(psn_data):
                 + str(tracker.tracker_id)
                 + " tracker info: "
                 + str(tracker.info)
-                + " / " + str(tracker.pos)
-                + " / " + str(tracker.speed)
-                + " / " + str(tracker.ori)
-                + " / " + str(tracker.accel)
-                + " / " + str(tracker.trgtpos)
-                + " / " + str(tracker.status)
-                + " / " + str(tracker.timestamp)
+                + " / "
+                + str(tracker.pos)
+                + " / "
+                + str(tracker.speed)
+                + " / "
+                + str(tracker.ori)
+                + " / "
+                + str(tracker.accel)
+                + " / "
+                + str(tracker.trgtpos)
+                + " / "
+                + str(tracker.status)
+                + " / "
+                + str(tracker.timestamp)
             )
 
 

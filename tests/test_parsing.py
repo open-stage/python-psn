@@ -1,6 +1,6 @@
 #!/bin/env python3
 """
-    Test parsing on some real world data.
+Test parsing on some real world data.
 """
 
 import binascii
