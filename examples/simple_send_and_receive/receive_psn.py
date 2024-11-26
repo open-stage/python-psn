@@ -40,7 +40,7 @@ def callback(psn_data):
         for tracker in psn_data.trackers:
             print(
                 "tracker ID: "
-                + str(tracker.id)
+                + str(tracker.tracker_id)
                 + " tracker info: "
                 + str(tracker.info)
                 + " / " + str(tracker.pos)

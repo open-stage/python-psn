@@ -621,7 +621,7 @@ def prepare_psn_data_packet_bytes(
             trackers_packet_bytes
             + pack(
                 "<HHHHfffHHfffHHfffHHfffHHfffHHfHHL",
-                tracker.id,
+                tracker.tracker_id,
                 96,  # (9 * 4) + (5 * 12)
                 PsnTrackerChunk.PSN_DATA_TRACKER_POS,
                 12,
@@ -708,5 +708,4 @@ def send_psn_packet(
         iface_ip=ip_addr
     ) as mcast_tx_sock:
 
-        for mcast_ip in mcast_ip:
-            mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))
+        mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))
