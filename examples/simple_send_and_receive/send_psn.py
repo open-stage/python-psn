@@ -86,7 +86,7 @@ print("packet_count: " + str(psn_data.info.packet_count))
 for tracker in psn_data.trackers:
     print(
         "tracker ID: "
-        + str(tracker.id)
+        + str(tracker.tracker_id)
         + " tracker info: "
         + str(tracker.info)
         + " / " + str(tracker.pos)
@@ -114,3 +114,4 @@ pypsn.send_psn_packet(
     ip_addr=sys.argv[1],
     mcast_port=56565,
 )
+

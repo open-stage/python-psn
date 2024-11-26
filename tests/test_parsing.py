@@ -17,10 +17,10 @@ def test_data_data(pypsn_module):
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
             data = pypsn_module.parse_psn_packet(hexdata)
-            test_vector = pypsn_module.psn_vector3(
+            test_vector = pypsn_module.PsnVector3(
                 0.20273426175117493, 6.0, -9.693662643432617
             )
-            if isinstance(data, pypsn_module.psn_data_packet):
+            if isinstance(data, pypsn_module.PsnDataPacket):
                 assert test_vector == data.trackers[0].pos
 
 
@@ -34,7 +34,7 @@ def test_data_info(pypsn_module):
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
             data = pypsn_module.parse_psn_packet(hexdata)
-            if isinstance(data, pypsn_module.psn_data_packet):
+            if isinstance(data, pypsn_module.PsnDataPacket):
                 assert 56 == data.info.frame_id
                 assert 1 == data.info.packet_count
                 assert 288058234 == data.info.timestamp
@@ -52,7 +52,7 @@ def test_info_info(pypsn_module):
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
             data = pypsn_module.parse_psn_packet(hexdata)
-            if isinstance(data, pypsn_module.psn_info_packet):
+            if isinstance(data, pypsn_module.PsnInfoPacket):
                 assert b"RoboSpot PSN Server" == data.name
                 assert 200 == data.info.frame_id
                 assert 1 == data.info.packet_count
@@ -71,5 +71,5 @@ def test_info_data(pypsn_module):
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
             data = pypsn_module.parse_psn_packet(hexdata)
-            if isinstance(data, pypsn_module.psn_info_packet):
+            if isinstance(data, pypsn_module.PsnInfoPacket):
                 assert data.trackers[0].tracker_name == b"RoboCamera"
