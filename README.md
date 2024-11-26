@@ -46,14 +46,14 @@ receiver.start()  # start the receiving thread
 receiver.stop() # stop receiving
 
 ```
-See examples folder for some more examples. 
+See examples folder for some more examples.
 
 ## Development, status
 
 - Supporting PSN V2
-- Parsing only, not sending
+- Parsing and sending (via [Multicast Expert](https://github.com/multiplemonomials/multicast_expert))
 - Using threading module
-- Linux, Windows and macOS tested
+- Linux (Rpi OS incl.), Windows and macOS tested
 - Typed, no-strict
 - Initial pytest testing provided together with CI/CD setup
 
@@ -71,7 +71,7 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 ### Testing
 
 - to test, use `pytest`
-- to test typing with mypy use 
+- to test typing with mypy use
 
 ```bash
 pytest --mypy -m mypy pypsn/*py

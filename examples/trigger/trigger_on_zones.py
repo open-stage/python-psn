@@ -1,7 +1,12 @@
 #! /bin/env python
+"""
+    Complete x,y sACN trigger.
+    Trigger script.
+"""
+
+import math
 import sacn
 import pypsn
-import math
 
 sender = sacn.sACNsender()
 zones = []
@@ -13,19 +18,29 @@ settings["min_distance"] = 0.70
 
 
 def start_dmx():
+    """
+        Start DMX sender thread.
+    """
     universe = settings["universe"]
     sender.start()  # start the sending thread
-    sender.activate_output(universe)  # start sending out data in the 1st universe
+    sender.activate_output(universe)  # start sending data in 1st universe
     sender[universe].multicast = True  # set multicast to True
 
 
 def stop_dmx():
+    """
+        Stop DMX sender thread.
+    """
     sender.stop()  # do not forget to stop the sender
 
 
 def set_settings_from_file(settings):
+    """
+        Update global settings from file.
+
+    """
     try:
-        with open("settings.txt") as uni_lines:
+        with open("settings.txt", encoding="UTF-8") as uni_lines:
             for uni_line in uni_lines.readlines():
                 uni_line = str(uni_line).strip()
                 if len(uni_line) < 1 or uni_line[1] == "#":
@@ -35,7 +50,9 @@ def set_settings_from_file(settings):
                 elif "ip_addr" in uni_line:
                     settings["ip_addr"] = uni_line.split(":")[1].strip()
                 elif "min_distance" in uni_line:
-                    settings["min_distance"] = float(uni_line.split(":")[1].strip())
+                    settings["min_distance"] = float(
+                        uni_line.split(":")[1].strip()
+                    )
                 elif "radius" in uni_line:
                     settings["radius"] = float(uni_line.split(":")[1].strip())
         print("got these settings", settings)
@@ -44,8 +61,14 @@ def set_settings_from_file(settings):
 
 
 def set_zones_from_file(zones):
+    """
+        Update zones from file.
+
+    Args:
+        zones (list): zone coordinates
+    """
     try:
-        with open("zones.txt") as zone_lines:
+        with open("zones.txt", encoding="UTF-8") as zone_lines:
             for zone_line in zone_lines.readlines():
                 zone_line = str(zone_line).strip()
                 if len(zone_line) < 5:
@@ -59,12 +82,24 @@ def set_zones_from_file(zones):
 
 
 def start_psn():
-    pypsn.receiver(check_zones, settings["ip_addr"]).start()
+    """
+        Start PSN receiver thread.
+
+    Returns:
+        Receiver: psn receiver class
+    """
+    pypsn.Receiver(check_zones, settings["ip_addr"]).start()
 
 
 def check_zones(psn_data):
-    if isinstance(psn_data, pypsn.psn_data_packet):
-        x, z, y = psn_data.trackers[0].pos
+    """
+        Update global coordinates.
+
+    Args:
+        psn_data (psnDataPacket): psn data class
+    """
+    if isinstance(psn_data, pypsn.PsnDataPacket):
+        x, _, y = psn_data.trackers[0].pos
         radius = settings["radius"]
         min_distance = settings["min_distance"]
         pos = [x, y]

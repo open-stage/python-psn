@@ -1,13 +1,18 @@
+#!/bin/env python3
+"""
+    Test parsing on some real world data.
+"""
+
 import binascii
 from pathlib import Path
-# Test parsing on some real world data
+
 
 def test_data_data(pypsn_module):
     """Test position"""
 
     test_data_file_path = Path(Path(__file__).parents[0], "data.log")
 
-    with open(test_data_file_path) as psn_data:
+    with open(test_data_file_path, encoding="UTF-8") as psn_data:
         for psn_line in psn_data.readlines():
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
@@ -24,7 +29,7 @@ def test_data_info(pypsn_module):
 
     test_data_file_path = Path(Path(__file__).parents[0], "data.log")
 
-    with open(test_data_file_path) as psn_data:
+    with open(test_data_file_path, encoding="UTF-8") as psn_data:
         for psn_line in psn_data.readlines():
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
@@ -42,7 +47,7 @@ def test_info_info(pypsn_module):
 
     test_data_file_path = Path(Path(__file__).parents[0], "data.log")
 
-    with open(test_data_file_path) as psn_data:
+    with open(test_data_file_path, encoding="UTF-8") as psn_data:
         for psn_line in psn_data.readlines():
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)
@@ -61,7 +66,7 @@ def test_info_data(pypsn_module):
 
     test_data_file_path = Path(Path(__file__).parents[0], "data.log")
 
-    with open(test_data_file_path) as psn_data:
+    with open(test_data_file_path, encoding="UTF-8") as psn_data:
         for psn_line in psn_data.readlines():
             psn_line = psn_line.strip()
             hexdata = binascii.unhexlify(psn_line)

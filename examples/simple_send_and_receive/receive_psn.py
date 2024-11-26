@@ -1,11 +1,19 @@
 #! /bin/env python3
+"""
+    Usage: python receive_psn.py 192.168.1.11 <--- change IP address
+"""
 
 import sys
 import pypsn
 
-# Usage: python receive_psn.py 192.168.1.11 <--- change IP address to used interface
 
 def callback(psn_data):
+    """
+        PSN data reception callback.
+
+    Args:
+        psn_data (psnDataPacket): psn data class
+    """
     try:
         system_name = str(psn_data.name)
 
@@ -45,4 +53,4 @@ def callback(psn_data):
             )
 
 
-pypsn.receiver(callback, sys.argv[1]).start()
+pypsn.Receiver(callback, sys.argv[1]).start()
