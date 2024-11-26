@@ -1,11 +1,12 @@
-import binascii
+#!/bin/env python3
+"""
+    Test packing and parsing our own data.
+"""
 import pypsn
-from pathlib import Path
-# Test packing and parsing our own data
 
 
-psn_info = pypsn.psn_info_packet(
-    info=pypsn.psn_info(
+psn_info = pypsn.PsnInfoPacket(
+    info=pypsn.PsnInfo(
         timestamp=1312,
         version_high=2,
         version_low=0,
@@ -15,7 +16,7 @@ psn_info = pypsn.psn_info_packet(
     name="system_name_001",
     trackers=(
         [
-            pypsn.psn_tracker_info(
+            pypsn.PsnTrackerInfo(
                 tracker_id=i,
                 tracker_name="tracker_" + str(i),
             )
@@ -23,34 +24,34 @@ psn_info = pypsn.psn_info_packet(
         ]
     ),
 )
-psn_data = pypsn.psn_data_packet(
+psn_data = pypsn.PsnDataPacket(
     info=psn_info.info,
     trackers=(
         [
-            pypsn.psn_tracker(
-                id=tracker.tracker_id,
+            pypsn.PsnTracker(
+                tracker_id=tracker.tracker_id,
                 info=psn_info.info,
-                pos=pypsn.psn_vector3(
+                pos=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
                     z=0.0,
                 ),
-                speed=pypsn.psn_vector3(
+                speed=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
                     z=0.0,
                 ),
-                ori=pypsn.psn_vector3(
+                ori=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
                     z=0.0,
                 ),
-                accel=pypsn.psn_vector3(
+                accel=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
                     z=0.0,
                 ),
-                trgtpos=pypsn.psn_vector3(
+                trgtpos=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
                     z=0.0,
@@ -65,10 +66,22 @@ psn_data = pypsn.psn_data_packet(
 
 
 def get_test_data():
+    """
+        Get test data.
+
+    Returns:
+        psn data packet: as bytes
+    """
     return pypsn.prepare_psn_data_packet_bytes(psn_data)
 
 
 def get_test_info():
+    """
+        Get test info.
+
+    Returns:
+        psn data packet: as bytes
+    """
     return pypsn.prepare_psn_info_packet_bytes(psn_info)
 
 
@@ -76,8 +89,8 @@ def test_data_data(pypsn_module):
     """Test position"""
     hexdata = get_test_data()
     data = pypsn_module.parse_psn_packet(hexdata)
-    test_vector = pypsn_module.psn_vector3(0.0, 0.0, 0.0)
-    if isinstance(data, pypsn_module.psn_data_packet):
+    test_vector = pypsn_module.PsnVector3(0.0, 0.0, 0.0)
+    if isinstance(data, pypsn_module.PsnDataPacket):
         assert test_vector == data.trackers[0].pos
 
 
@@ -86,7 +99,7 @@ def test_data_info(pypsn_module):
 
     hexdata = get_test_data()
     data = pypsn_module.parse_psn_packet(hexdata)
-    if isinstance(data, pypsn_module.psn_data_packet):
+    if isinstance(data, pypsn_module.PsnDataPacket):
         assert 56 == data.info.frame_id
         assert 1 == data.info.packet_count
         assert 1312 == data.info.timestamp
@@ -99,7 +112,7 @@ def test_info_info(pypsn_module):
 
     hexdata = get_test_data()
     data = pypsn_module.parse_psn_packet(hexdata)
-    if isinstance(data, pypsn_module.psn_info_packet):
+    if isinstance(data, pypsn_module.PsnInfoPacket):
         assert b"system_name_001" == data.name
         assert 56 == data.info.frame_id
         assert 1 == data.info.packet_count
@@ -113,5 +126,5 @@ def test_info_data(pypsn_module):
 
     hexdata = get_test_info()
     data = pypsn_module.parse_psn_packet(hexdata)
-    if isinstance(data, pypsn_module.psn_info_packet):
+    if isinstance(data, pypsn_module.PsnInfoPacket):
         assert data.trackers[0].tracker_name == b"tracker_0"
