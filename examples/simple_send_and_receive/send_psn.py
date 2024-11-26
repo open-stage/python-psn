@@ -1,9 +1,9 @@
 #! /bin/env python3
 """
-    Usage: python send_psn.py 192.168.1.4 1
+Usage: python send_psn.py 192.168.1.4 1
 
-    Change the IP address.
-    The 2nd arg is the number of tracker to generate.
+Change the IP address.
+The 2nd arg is the number of tracker to generate.
 
 """
 
@@ -11,7 +11,7 @@ import sys
 import time
 import pypsn
 
-start_time_us = time.time_ns()//1000
+start_time_us = time.time_ns() // 1000
 
 psn_info = pypsn.PsnInfoPacket(
     info=pypsn.PsnInfo(
@@ -27,7 +27,8 @@ psn_info = pypsn.PsnInfoPacket(
             pypsn.PsnTrackerInfo(
                 tracker_id=i,
                 tracker_name="tracker_" + str(i),
-            ) for i in range(0, int(sys.argv[2]))
+            )
+            for i in range(0, int(sys.argv[2]))
         ]
     ),
 )
@@ -72,9 +73,10 @@ psn_data = pypsn.PsnDataPacket(
                     z=0.0,
                 ),
                 timestamp=start_time_us,
-            ) for tracker in psn_info.trackers
+            )
+            for tracker in psn_info.trackers
         ]
-    )
+    ),
 )
 
 print("\n--- PSN infos to be sent at 1Hz ---")
@@ -101,21 +103,28 @@ for tracker in psn_data.trackers:
         + str(tracker.tracker_id)
         + " tracker info: "
         + str(tracker.info)
-        + " / " + str(tracker.pos)
-        + " / " + str(tracker.speed)
-        + " / " + str(tracker.ori)
-        + " / " + str(tracker.accel)
-        + " / " + str(tracker.trgtpos)
-        + " / " + str(tracker.status)
-        + " / " + str(tracker.timestamp)
+        + " / "
+        + str(tracker.pos)
+        + " / "
+        + str(tracker.speed)
+        + " / "
+        + str(tracker.ori)
+        + " / "
+        + str(tracker.accel)
+        + " / "
+        + str(tracker.trgtpos)
+        + " / "
+        + str(tracker.status)
+        + " / "
+        + str(tracker.timestamp)
     )
 
 print("\n--- Sendin PSN data in loop ---")
 counter = 0.0
 
 while True:
-    time.sleep(1/60)
-    elapsed_time_us = time.time_ns()//1000 - start_time_us
+    time.sleep(1 / 60)
+    elapsed_time_us = time.time_ns() // 1000 - start_time_us
 
     if counter < 6.0:
         counter += 0.1
@@ -127,7 +136,7 @@ while True:
 
         pypsn.send_psn_packet(
             psn_packet=psn_info_packet_bytes,
-            mcast_ip='236.10.10.10',
+            mcast_ip="236.10.10.10",
             ip_addr=sys.argv[1],
             mcast_port=56565,
         )
@@ -151,7 +160,7 @@ while True:
 
     pypsn.send_psn_packet(
         psn_packet=psn_data_packet_bytes,
-        mcast_ip='236.10.10.10',
+        mcast_ip="236.10.10.10",
         ip_addr=sys.argv[1],
         mcast_port=56565,
     )
