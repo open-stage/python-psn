@@ -1,8 +1,9 @@
 #! /bin/env python
 """
-    Complete x,y sACN trigger.
-    Callibration script.
+Complete x,y sACN trigger.
+Callibration script.
 """
+
 import pypsn
 
 X = 0
@@ -12,7 +13,7 @@ Z = 0
 
 def set_settings_from_file(old_settings):
     """
-        Update global settings from file.
+    Update global settings from file.
 
     """
     try:
@@ -23,19 +24,13 @@ def set_settings_from_file(old_settings):
                 if len(uni_line) < 1 or uni_line[1] == "#":
                     continue
                 if "universe" in uni_line:
-                    new_settings["universe"] = int(
-                        uni_line.split(":")[1].strip()
-                    )
+                    new_settings["universe"] = int(uni_line.split(":")[1].strip())
                 elif "ip_addr" in uni_line:
                     new_settings["ip_addr"] = uni_line.split(":")[1].strip()
                 elif "min_distance" in uni_line:
-                    new_settings["min_distance"] = float(
-                        uni_line.split(":")[1].strip()
-                    )
+                    new_settings["min_distance"] = float(uni_line.split(":")[1].strip())
                 elif "radius" in uni_line:
-                    new_settings["radius"] = float(
-                        uni_line.split(":")[1].strip()
-                    )
+                    new_settings["radius"] = float(uni_line.split(":")[1].strip())
         print("got these settings", new_settings)
         return new_settings
     except Exception as e:
@@ -88,8 +83,7 @@ def set_zones_from_file(old_zones):
         return new_zones
     except Exception as e:
         print(
-            "Zones not imported from zones.txt, "
-            + "using default ones. Error was:", e
+            "Zones not imported from zones.txt, " + "using default ones. Error was:", e
         )
         return old_zones
 
@@ -123,9 +117,7 @@ if __name__ == "__main__":
     glob_receiver = start_psn(glob_settings.get("ip_addr"))
 
     while True:
-        val = input(
-            "Press enter to store current position as a zone, press q to Quit"
-        )
+        val = input("Press enter to store current position as a zone, press q to Quit")
         if val.lower() == "q":
             glob_receiver.stop()
             break

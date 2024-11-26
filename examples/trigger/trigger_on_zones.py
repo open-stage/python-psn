@@ -1,7 +1,7 @@
 #! /bin/env python
 """
-    Complete x,y sACN trigger.
-    Trigger script.
+Complete x,y sACN trigger.
+Trigger script.
 """
 
 import math
@@ -19,7 +19,7 @@ settings["min_distance"] = 0.70
 
 def start_dmx():
     """
-        Start DMX sender thread.
+    Start DMX sender thread.
     """
     universe = settings["universe"]
     sender.start()  # start the sending thread
@@ -29,14 +29,14 @@ def start_dmx():
 
 def stop_dmx():
     """
-        Stop DMX sender thread.
+    Stop DMX sender thread.
     """
     sender.stop()  # do not forget to stop the sender
 
 
 def set_settings_from_file(settings):
     """
-        Update global settings from file.
+    Update global settings from file.
 
     """
     try:
@@ -50,9 +50,7 @@ def set_settings_from_file(settings):
                 elif "ip_addr" in uni_line:
                     settings["ip_addr"] = uni_line.split(":")[1].strip()
                 elif "min_distance" in uni_line:
-                    settings["min_distance"] = float(
-                        uni_line.split(":")[1].strip()
-                    )
+                    settings["min_distance"] = float(uni_line.split(":")[1].strip())
                 elif "radius" in uni_line:
                     settings["radius"] = float(uni_line.split(":")[1].strip())
         print("got these settings", settings)

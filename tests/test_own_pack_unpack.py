@@ -1,7 +1,8 @@
 #!/bin/env python3
 """
-    Test packing and parsing our own data.
+Test packing and parsing our own data.
 """
+
 import pypsn
 
 

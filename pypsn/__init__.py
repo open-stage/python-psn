@@ -1,6 +1,6 @@
 #!/bin/env python3
 """
-    Pure python PSN interface.
+Pure python PSN interface.
 """
 
 import socket
@@ -15,8 +15,8 @@ __version__ = "0.2.4"
 
 
 class PsnVector3:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(self, x: float, y: float, z: float):
         self.x = x
         self.y = y
@@ -33,8 +33,8 @@ class PsnVector3:
 
 
 class PsnInfo:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(
         self,
         timestamp: int,
@@ -51,16 +51,16 @@ class PsnInfo:
 
 
 class PsnTrackerInfo:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(self, tracker_id: int, tracker_name: str):
         self.tracker_id = tracker_id
         self.tracker_name = tracker_name
 
 
 class PsnTracker:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(
         self,
         tracker_id: int,
@@ -85,16 +85,16 @@ class PsnTracker:
 
 
 class PsnDataPacket:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(self, info: "PsnInfo", trackers: List["PsnTracker"]):
         self.info = info
         self.trackers = trackers
 
 
 class PsnInfoPacket:
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(
         self,
         info: "PsnInfo",
@@ -112,6 +112,7 @@ class PsnV1Chunk(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_V1_INFO_PACKET = 0x503C
     PSN_V1_DATA_PACKET = 0x6754
 
@@ -122,6 +123,7 @@ class PsnV2Chunck(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_INFO_PACKET = 0x6756
     PSN_DATA_PACKET = 0x6755
 
@@ -132,6 +134,7 @@ class PsnInfoChunk(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_INFO_PACKET_HEADER = 0x0000
     PSN_INFO_SYSTEM_NAME = 0x0001
     PSN_INFO_TRACKER_LIST = 0x0002
@@ -143,6 +146,7 @@ class PsnDataChunk(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_DATA_PACKET_HEADER = 0x0000
     PSN_DATA_TRACKER_LIST = 0x0001
 
@@ -153,6 +157,7 @@ class PasnTrackerListChunk(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_INFO_TRACKER_NAME = 0x0000
 
 
@@ -162,6 +167,7 @@ class PsnTrackerChunk(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_DATA_TRACKER_POS = 0x0000
     PSN_DATA_TRACKER_SPEED = 0x0001
     PSN_DATA_TRACKER_ORI = 0x0002
@@ -175,6 +181,7 @@ class PsnTrackerChunkInfo(IntEnum):
     Args:
         IntEnum (_type_): _description_
     """
+
     PSN_DATA_TRACKER_STATUS = 0x0003
     PSN_DATA_TRACKER_TIMESTAMP = 0x0006
 
@@ -221,11 +228,7 @@ def join_multicast_posix(mcast_grp, mcast_port, if_ip):
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
 
     sock.bind((mcast_grp, mcast_port))
-    sock.setsockopt(
-        socket.SOL_IP,
-        socket.IP_MULTICAST_IF,
-        socket.inet_aton(if_ip)
-    )
+    sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton(if_ip))
     sock.setsockopt(
         socket.IPPROTO_IP,
         socket.IP_ADD_MEMBERSHIP,
@@ -256,12 +259,8 @@ class Receiver(Thread):
     Args:
         Thread (_type_): _description_
     """
-    def __init__(
-        self, callback,
-        ip_addr="0.0.0.0",
-        mcast_port=56565,
-        timeout=2
-    ):
+
+    def __init__(self, callback, ip_addr="0.0.0.0", mcast_port=56565, timeout=2):
         Thread.__init__(self)
         self.callback = callback
         self.running = True
@@ -270,16 +269,14 @@ class Receiver(Thread):
             self.socket.settimeout(timeout)
 
     def stop(self):
-        """_summary_
-        """
+        """_summary_"""
         self.running = False
         if self.socket is not None:
             self.socket.close()
         self.join()
 
     def run(self):
-        """_summary_
-        """
+        """_summary_"""
         data = ""
         if self.socket is None:
             return
@@ -347,11 +344,11 @@ def parse_chunk(buffer):
     """
     chunk_id, data_field = unpack("<HH", buffer[0:4])
     data_len = data_field & 0x7FFF
-    data = buffer[4:4 + data_len]
+    data = buffer[4 : 4 + data_len]
     rest = None
 
     if data_len + 8 < len(buffer):
-        rest = buffer[data_len + 4:]
+        rest = buffer[data_len + 4 :]
     return chunk_id, data, rest
 
 
@@ -419,21 +416,11 @@ def parse_header(buffer):
     Returns:
         _type_: _description_
     """
-    (
-        timestamp,
-        version_high,
-        version_low,
-        frame_id,
-        packet_count
-    ) = unpack("<QBBBB", buffer)
-
-    info = PsnInfo(
-        timestamp,
-        version_high,
-        version_low,
-        frame_id,
-        packet_count
+    (timestamp, version_high, version_low, frame_id, packet_count) = unpack(
+        "<QBBBB", buffer
     )
+
+    info = PsnInfo(timestamp, version_high, version_low, frame_id, packet_count)
 
     return info
 
@@ -504,31 +491,20 @@ def parse_data_tracker_list(buffer):
                         tracker.accel = vector
                     elif chunk_id == PsnTrackerChunk.PSN_DATA_TRACKER_SPEED:
                         tracker.speed = vector
-                    elif (
-                        chunk_id ==
-                        PsnTrackerChunk.PSN_DATA_TRACKER_TRGTPOS
-                    ):
+                    elif chunk_id == PsnTrackerChunk.PSN_DATA_TRACKER_TRGTPOS:
                         tracker.trgtpos = vector
 
-                elif (
-                    chunk_id ==
-                    PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS
-                ):
+                elif chunk_id == PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS:
                     status = unpack("<f", data_buffer)[0]
                     tracker.status = status
-                elif (
-                    chunk_id ==
-                    PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP
-                ):
+                elif chunk_id == PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP:
                     timestamp = unpack("<L", data_buffer[:4])[0]
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
 
 
-def prepare_psn_info_packet_bytes(
-    info_packet: PsnInfoPacket
-):
+def prepare_psn_info_packet_bytes(info_packet: PsnInfoPacket):
     """_summary_
 
     Args:
@@ -537,7 +513,7 @@ def prepare_psn_info_packet_bytes(
     Returns:
         _type_: _description_
     """
-    trackers_packet_bytes = b''
+    trackers_packet_bytes = b""
     tot_enc_tracker_name_length = 0
 
     for tracker in info_packet.trackers:
@@ -545,25 +521,21 @@ def prepare_psn_info_packet_bytes(
         tracker_name_len = len(encoded_tracker_name)
 
         tot_enc_tracker_name_length = (
-            tot_enc_tracker_name_length
-            + tracker_name_len + 16
+            tot_enc_tracker_name_length + tracker_name_len + 16
         )
-        trackers_packet_bytes = (
-            trackers_packet_bytes
-            + pack(
-                "<HHHH" + str(tracker_name_len) + "s",
-                tracker.tracker_id,
-                tracker_name_len + 4,
-                PasnTrackerListChunk.PSN_INFO_TRACKER_NAME,
-                tracker_name_len,
-                encoded_tracker_name,
-            )
+        trackers_packet_bytes = trackers_packet_bytes + pack(
+            "<HHHH" + str(tracker_name_len) + "s",
+            tracker.tracker_id,
+            tracker_name_len + 4,
+            PasnTrackerListChunk.PSN_INFO_TRACKER_NAME,
+            tracker_name_len,
+            encoded_tracker_name,
         )
     trackers_packet_bytes = (
         pack(
             "<HH",
             PsnInfoChunk.PSN_INFO_TRACKER_LIST,
-            4 + tot_enc_tracker_name_length + 4
+            4 + tot_enc_tracker_name_length + 4,
         )
         + trackers_packet_bytes
     )
@@ -572,15 +544,9 @@ def prepare_psn_info_packet_bytes(
     system_name_lenght = len(encoded_system_name)
     info_packet_bytes = (
         pack(
-            (
-                "<HHHHQBBBBHH"
-                + str(system_name_lenght)
-                + "s"
-            ),
+            ("<HHHHQBBBBHH" + str(system_name_lenght) + "s"),
             PsnV2Chunck.PSN_INFO_PACKET,
-            (
-                20 + system_name_lenght + tot_enc_tracker_name_length
-            ),
+            (20 + system_name_lenght + tot_enc_tracker_name_length),
             PsnInfoChunk.PSN_INFO_PACKET_HEADER,
             12,
             info_packet.info.timestamp,
@@ -590,7 +556,7 @@ def prepare_psn_info_packet_bytes(
             info_packet.info.packet_count,
             PsnInfoChunk.PSN_INFO_SYSTEM_NAME,
             system_name_lenght,
-            encoded_system_name
+            encoded_system_name,
         )
         + trackers_packet_bytes
     )
@@ -598,9 +564,7 @@ def prepare_psn_info_packet_bytes(
     return info_packet_bytes
 
 
-def prepare_psn_data_packet_bytes(
-    data_packet: PsnDataPacket
-):
+def prepare_psn_data_packet_bytes(data_packet: PsnDataPacket):
     """_summary_
 
     Args:
@@ -609,78 +573,66 @@ def prepare_psn_data_packet_bytes(
     Returns:
         _type_: _description_
     """
-    trackers_packet_bytes = b''
+    trackers_packet_bytes = b""
     tot_enc_tracker_length = 0
 
     for tracker in data_packet.trackers:
         tot_enc_tracker_length = (
-            tot_enc_tracker_length
-            + 100  # (10 * 4) + (5 * 12)
+            tot_enc_tracker_length + 100  # (10 * 4) + (5 * 12)
         )
-        trackers_packet_bytes = (
-            trackers_packet_bytes
-            + pack(
-                "<HHHHfffHHfffHHfffHHfffHHfffHHfHHL",
-                tracker.tracker_id,
-                96,  # (9 * 4) + (5 * 12)
-                PsnTrackerChunk.PSN_DATA_TRACKER_POS,
-                12,
-                tracker.pos.x,
-                tracker.pos.y,
-                tracker.pos.z,
-                PsnTrackerChunk.PSN_DATA_TRACKER_ORI,
-                12,
-                tracker.ori.x,
-                tracker.ori.y,
-                tracker.ori.z,
-                PsnTrackerChunk.PSN_DATA_TRACKER_ACCEL,
-                12,
-                tracker.accel.x,
-                tracker.accel.y,
-                tracker.accel.z,
-                PsnTrackerChunk.PSN_DATA_TRACKER_SPEED,
-                12,
-                tracker.speed.x,
-                tracker.speed.y,
-                tracker.speed.z,
-                PsnTrackerChunk.PSN_DATA_TRACKER_TRGTPOS,
-                12,
-                tracker.trgtpos.x,
-                tracker.trgtpos.y,
-                tracker.trgtpos.z,
-                PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS,
-                4,
-                tracker.status,
-                PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP,
-                4,
-                tracker.timestamp,
-            )
+        trackers_packet_bytes = trackers_packet_bytes + pack(
+            "<HHHHfffHHfffHHfffHHfffHHfffHHfHHL",
+            tracker.tracker_id,
+            96,  # (9 * 4) + (5 * 12)
+            PsnTrackerChunk.PSN_DATA_TRACKER_POS,
+            12,
+            tracker.pos.x,
+            tracker.pos.y,
+            tracker.pos.z,
+            PsnTrackerChunk.PSN_DATA_TRACKER_ORI,
+            12,
+            tracker.ori.x,
+            tracker.ori.y,
+            tracker.ori.z,
+            PsnTrackerChunk.PSN_DATA_TRACKER_ACCEL,
+            12,
+            tracker.accel.x,
+            tracker.accel.y,
+            tracker.accel.z,
+            PsnTrackerChunk.PSN_DATA_TRACKER_SPEED,
+            12,
+            tracker.speed.x,
+            tracker.speed.y,
+            tracker.speed.z,
+            PsnTrackerChunk.PSN_DATA_TRACKER_TRGTPOS,
+            12,
+            tracker.trgtpos.x,
+            tracker.trgtpos.y,
+            tracker.trgtpos.z,
+            PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS,
+            4,
+            tracker.status,
+            PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP,
+            4,
+            tracker.timestamp,
         )
     trackers_packet_bytes = (
-        pack(
-            "<HH",
-            PsnDataChunk.PSN_DATA_TRACKER_LIST,
-            4 + tot_enc_tracker_length
-        )
+        pack("<HH", PsnDataChunk.PSN_DATA_TRACKER_LIST, 4 + tot_enc_tracker_length)
         + trackers_packet_bytes
     )
 
     data_packet_bytes = (
         pack(
-            (
-                "<HHHHQBBBB"
-            ),
+            ("<HHHHQBBBB"),
             PsnV2Chunck.PSN_DATA_PACKET,
-            (
-                20 + tot_enc_tracker_length
-            ),
+            (20 + tot_enc_tracker_length),
             PsnDataChunk.PSN_DATA_PACKET_HEADER,
             12,
             data_packet.info.timestamp,
             data_packet.info.version_high,
             data_packet.info.version_low,
             data_packet.info.frame_id,
-            data_packet.info.packet_count
+            data_packet.info.packet_count,
         )
         + trackers_packet_bytes
     )
@@ -689,10 +641,7 @@ def prepare_psn_data_packet_bytes(
 
 
 def send_psn_packet(
-    psn_packet,
-    mcast_ip='236.10.10.10',
-    ip_addr="0.0.0.0",
-    mcast_port=56565
+    psn_packet, mcast_ip="236.10.10.10", ip_addr="0.0.0.0", mcast_port=56565
 ):
     """_summary_
 
@@ -703,9 +652,6 @@ def send_psn_packet(
         mcast_port (int, optional): _description_. Default to 56565.
     """
     with multicast_expert.McastTxSocket(
-        socket.AF_INET,
-        mcast_ips=[mcast_ip],
-        iface_ip=ip_addr
+        socket.AF_INET, mcast_ips=[mcast_ip], iface_ip=ip_addr
     ) as mcast_tx_sock:
-
         mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))

@@ -1,8 +1,8 @@
 #!/bin/env python3
 """
-    This file sets up a pytest fixtures for the tests.
-    It is important that this file stays in this location
-    as this makes pytest to load pypsn from the pypsn directory.
+This file sets up a pytest fixtures for the tests.
+It is important that this file stays in this location
+as this makes pytest to load pypsn from the pypsn directory.
 """
 
 import pytest

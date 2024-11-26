@@ -1,8 +1,9 @@
 #! /bin/env python
 """
-    Simple forwarder of PSN to DMX. Turns all coordinates to positive ints.
-    Requires sacn module: pip install sacn
+Simple forwarder of PSN to DMX. Turns all coordinates to positive ints.
+Requires sacn module: pip install sacn
 """
+
 import sacn
 import pypsn
 
@@ -12,7 +13,7 @@ sender = sacn.sACNsender()
 
 def start_dmx():
     """
-        Start DMX sender thread.
+    Start DMX sender thread.
     """
     sender.start()  # start the sending thread
     sender.activate_output(1)  # start sending out data in the 1st universe
@@ -21,14 +22,14 @@ def start_dmx():
 
 def stop_dmx():
     """
-        Stop DMX sender thread.
+    Stop DMX sender thread.
     """
     sender.stop()  # do not forget to stop the sender
 
 
 def start_psn():
     """
-        Start PSN receiver thread.
+    Start PSN receiver thread.
     """
     pypsn.Receiver(fill_dmx, "192.168.20.177").start()
 

@@ -1,8 +1,9 @@
 #! /bin/env python3
 """
-    Usage: python send_psn.py 192.168.1.4 <--- change IP address
+Usage: python send_psn.py 192.168.1.4 <--- change IP address
 
 """
+
 import sys
 import pypsn
 
@@ -15,15 +16,16 @@ psn_info = pypsn.PsnInfoPacket(
         frame_id=56,
         packet_count=1,
     ),
-    name='system_name_001',
+    name="system_name_001",
     trackers=(
         [
             pypsn.PsnTrackerInfo(
                 tracker_id=i,
                 tracker_name="tracker_" + str(i),
-            ) for i in range(0, 7)
+            )
+            for i in range(0, 7)
         ]
-    )
+    ),
 )
 
 psn_data = pypsn.PsnDataPacket(
@@ -60,9 +62,10 @@ psn_data = pypsn.PsnDataPacket(
                 ),
                 status=0,
                 timestamp=psn_info.info.timestamp,
-            ) for tracker in psn_info.trackers
+            )
+            for tracker in psn_info.trackers
         ]
-    )
+    ),
 )
 
 print("\n--- PSN infos to be sent ---")
@@ -89,13 +92,20 @@ for tracker in psn_data.trackers:
         + str(tracker.tracker_id)
         + " tracker info: "
         + str(tracker.info)
-        + " / " + str(tracker.pos)
-        + " / " + str(tracker.speed)
-        + " / " + str(tracker.ori)
-        + " / " + str(tracker.accel)
-        + " / " + str(tracker.trgtpos)
-        + " / " + str(tracker.status)
-        + " / " + str(tracker.timestamp)
+        + " / "
+        + str(tracker.pos)
+        + " / "
+        + str(tracker.speed)
+        + " / "
+        + str(tracker.ori)
+        + " / "
+        + str(tracker.accel)
+        + " / "
+        + str(tracker.trgtpos)
+        + " / "
+        + str(tracker.status)
+        + " / "
+        + str(tracker.timestamp)
     )
 
 psn_info_packet_bytes = pypsn.prepare_psn_info_packet_bytes(psn_info)
@@ -103,15 +113,14 @@ psn_data_packet_bytes = pypsn.prepare_psn_data_packet_bytes(psn_data)
 
 pypsn.send_psn_packet(
     psn_packet=psn_info_packet_bytes,
-    mcast_ip='236.10.10.10',
+    mcast_ip="236.10.10.10",
     ip_addr=sys.argv[1],
     mcast_port=56565,
 )
 
 pypsn.send_psn_packet(
     psn_packet=psn_data_packet_bytes,
-    mcast_ip='236.10.10.10',
+    mcast_ip="236.10.10.10",
     ip_addr=sys.argv[1],
     mcast_port=56565,
 )
-
