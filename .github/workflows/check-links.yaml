@@ -1,6 +1,6 @@
 name: Check links in markdown
 
-on: push
+on: [push, pull_request]
 
 jobs:
   test_links_in_readme:
