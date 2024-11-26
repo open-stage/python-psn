@@ -21,7 +21,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Install dependencies
-        run: pip install pytest pytest-md pytest-emoji pytest-mypy
+        run: |
+          pip install pytest pytest-md pytest-emoji pytest-mypy
+          pip install multicast_expert 
       - uses: pavelzw/pytest-action@v2
         with:
           verbose: true
