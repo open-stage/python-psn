@@ -661,7 +661,7 @@ def send_psn_packet(
 
     Args:
         psn_packet (_type_): _description_
-        mcast_ip (str, optional): _description_. Default '236.10.10.10'.
+        mcast_ip (str, optional): _description_. Default "236.10.10.10".
         ip_addr (str, optional): _description_. Default "0.0.0.0".
         mcast_port (int, optional): _description_. Default to 56565.
     """
