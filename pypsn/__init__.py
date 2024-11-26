@@ -645,7 +645,7 @@ def prepare_psn_data_packet_bytes(
         pack(
             "<HH",
             PsnDataChunk.PSN_DATA_TRACKER_LIST,
-            tot_enc_tracker_length
+            tot_enc_tracker_length | (1 << 15)
         )
         + trackers_packet_bytes
     )
