@@ -60,7 +60,7 @@ psn_data = pypsn.PsnDataPacket(
                     y=0.0,
                     z=0.0,
                 ),
-                status=1.0,
+                status=0.5,
                 accel=pypsn.PsnVector3(
                     x=0.0,
                     y=0.0,
@@ -114,7 +114,7 @@ print("\n--- Sendin PSN data in loop ---")
 counter = 0.0
 
 while True:
-    time.sleep(1/60)
+    time.sleep(1/600)
     elapsed_time_us = time.time_ns()//1000 - start_time_us
 
     if counter < 6.0:
@@ -133,10 +133,19 @@ while True:
         )
 
     psn_data.info.timestamp = elapsed_time_us
+
+    if psn_data.info.frame_id < 255:
+        psn_data.info.frame_id += 1
+    else:
+        psn_data.info.frame_id = 0
+
     for tracker in psn_data.trackers:
         tracker.timestamp = elapsed_time_us
         tracker.pos.x = counter
-        tracker.pos.y = counter
+        tracker.speed.x = counter
+        tracker.ori.x = counter
+        tracker.accel.x = counter
+        tracker.trgtpos.x = counter
 
     psn_data_packet_bytes = pypsn.prepare_psn_data_packet_bytes(psn_data)
 
