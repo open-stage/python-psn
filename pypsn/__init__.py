@@ -507,7 +507,7 @@ def parse_data_tracker_list(buffer):
                     chunk_id ==
                     PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP
                 ):
-                    timestamp = unpack("<Q", data_buffer[:4])[0]
+                    timestamp = unpack("<Q", data_buffer[:8])[0]
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
