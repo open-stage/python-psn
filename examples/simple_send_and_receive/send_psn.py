@@ -114,7 +114,7 @@ print("\n--- Sendin PSN data in loop ---")
 counter = 0.0
 
 while True:
-    time.sleep(1/600)
+    time.sleep(1/60)
     elapsed_time_us = time.time_ns()//1000 - start_time_us
 
     if counter < 6.0:
