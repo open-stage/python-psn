@@ -170,5 +170,5 @@ while True:
         psn_packet=psn_data_packet_bytes,
         mcast_ip="236.10.10.10",
         ip_addr=sys.argv[1],
-        mcast_port=56565,
+        port=56565,
     )
