@@ -5,6 +5,14 @@ Usage: python send_psn.py 192.168.1.4 1
 Change the IP address.
 The 2nd arg is the number of tracker to generate.
 
+Variables mapping for GrandMa3 users:
+
+- pos.xyz -> Position X Y Z
+- speed.xyz -> Speed X Y Z
+- ori.xyz -> Rot X Y Z
+- accel.xyz -> None
+- trgtpos.xyz -> None
+
 """
 
 import sys
@@ -134,7 +142,7 @@ while True:
         psn_info.info.timestamp = elapsed_time_us
         psn_info_packet_bytes = pypsn.prepare_psn_info_packet_bytes(psn_info)
 
-        pypsn.send_psn_packet(
+        pypsn.send_psn_packet_mc(
             psn_packet=psn_info_packet_bytes,
             mcast_ip="236.10.10.10",
             ip_addr=sys.argv[1],
@@ -158,7 +166,7 @@ while True:
 
     psn_data_packet_bytes = pypsn.prepare_psn_data_packet_bytes(psn_data)
 
-    pypsn.send_psn_packet(
+    pypsn.send_psn_packet_mc(
         psn_packet=psn_data_packet_bytes,
         mcast_ip="236.10.10.10",
         ip_addr=sys.argv[1],
