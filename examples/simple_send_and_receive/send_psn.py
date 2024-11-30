@@ -166,7 +166,7 @@ while True:
 
     psn_data_packet_bytes = pypsn.prepare_psn_data_packet_bytes(psn_data)
 
-    pypsn.send_psn_packet_mc(
+    pypsn.send_psn_packet(
         psn_packet=psn_data_packet_bytes,
         mcast_ip="236.10.10.10",
         ip_addr=sys.argv[1],

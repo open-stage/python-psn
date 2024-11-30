@@ -654,32 +654,24 @@ def prepare_psn_data_packet_bytes(data_packet: PsnDataPacket):
     return data_packet_bytes
 
 
-def send_psn_packet_mc(
-    psn_packet, mcast_ip="236.10.10.10", ip_addr="0.0.0.0", mcast_port=56565
+def send_psn_packet(
+    psn_packet, mcast_ip="236.10.10.10", ip_addr="127.0.0.1", port=56565
 ):
-    """Send psn packet via multicat with the help of multicast_expert
+    """Send psn packet.
+        If mcast_ip is specified, it does via multicast with the help
+        of multicast_expert. If not, it does via simple unicast.
 
     Args:
         psn_packet (_type_): as bytes
         mcast_ip (str, optional): Default "236.10.10.10".
-        ip_addr (str, optional): Default "0.0.0.0".
-        mcast_port (int, optional): Default to 56565.
+        ip_addr (str, optional): Default "127.0.0.1".
+        port (int, optional): Default to 56565.
     """
-    with multicast_expert.McastTxSocket(
-        socket.AF_INET, mcast_ips=[mcast_ip], iface_ip=ip_addr
-    ) as mcast_tx_sock:
-        mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))
-
-
-def send_psn_packet_uc(
-    psn_packet, ucast_ip="127.0.0.1", ucast_port=56565
-):
-    """Send psn packet via unicast
-
-    Args:
-        psn_packet (_type_): as bytes
-        ucast_ip (str, optional): Default "127.0.0.1".
-        ucast_port (int, optional): Default to 56565.
-    """
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
-    sock.sendto(psn_packet, (ucast_ip, ucast_port))
+    if mcast_ip:
+        with multicast_expert.McastTxSocket(
+            socket.AF_INET, mcast_ips=[mcast_ip], iface_ip=ip_addr
+        ) as mcast_tx_sock:
+            mcast_tx_sock.sendto(psn_packet, (mcast_ip, port))
+    else:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
+        sock.sendto(psn_packet, (ip_addr, port))
