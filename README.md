@@ -90,9 +90,10 @@ See examples folder for some more examples.
 ## Development, status
 
 - Supporting PSN V2
-- Parsing and sending (via [Multicast Expert](https://github.com/multiplemonomials/multicast_expert))
+- Parsing and sending (via [Multicast Expert](https://github.com/multiplemonomials/multicast_expert)) or via Unicast
 - Using threading module
 - Linux (Rpi OS incl.), Windows and macOS tested
+- PSN messages recognized by GrandMa3 2.1
 - Typed, no-strict
 - Initial pytest testing provided together with CI/CD setup
 
