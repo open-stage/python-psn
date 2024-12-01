@@ -33,7 +33,7 @@ try:
         mcast_ip = sys.argv[3]
 
 except Exception as e:
-    print('Args: tracker_num ip_addr mcast_ip (opt).')
+    print("Args: tracker_num ip_addr mcast_ip (opt).")
     print(e)
 
 start_time_us = time.time_ns() // 1000
