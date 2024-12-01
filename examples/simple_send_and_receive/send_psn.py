@@ -1,9 +1,14 @@
 #! /bin/env python3
 """
-Usage: python send_psn.py 192.168.1.4 1
+Usage:
 
-Change the IP address.
-The 2nd arg is the number of tracker to generate.
+multicast: python send_psn.py 1 192.168.1.4 236.10.10.10
+unicast: python send_psn.py 1 192.168.1.4
+
+Args:
+- number of trackers to generate
+- local IP adress
+- multricast adress (opt)
 
 Variables mapping for GrandMa3 users:
 
@@ -18,6 +23,18 @@ Variables mapping for GrandMa3 users:
 import sys
 import time
 import pypsn
+
+try:
+    tracker_num = int(sys.argv[1])
+    ip_addr = sys.argv[2]
+    mcast_ip = None
+
+    if sys.argv[3]:
+        mcast_ip = sys.argv[3]
+
+except Exception as e:
+    print('Args: tracker_num ip_addr mcast_ip (opt).')
+    print(e)
 
 start_time_us = time.time_ns() // 1000
 
@@ -36,7 +53,7 @@ psn_info = pypsn.PsnInfoPacket(
                 tracker_id=i,
                 tracker_name="tracker_" + str(i),
             )
-            for i in range(0, int(sys.argv[2]))
+            for i in range(0, tracker_num)
         ]
     ),
 )
@@ -144,8 +161,8 @@ while True:
 
         pypsn.send_psn_packet(
             psn_packet=psn_info_packet_bytes,
-            mcast_ip="236.10.10.10",
-            ip_addr=sys.argv[1],
+            mcast_ip=mcast_ip,
+            ip_addr=ip_addr,
             port=56565,
         )
 
@@ -168,7 +185,7 @@ while True:
 
     pypsn.send_psn_packet(
         psn_packet=psn_data_packet_bytes,
-        mcast_ip="236.10.10.10",
-        ip_addr=sys.argv[1],
+        mcast_ip=mcast_ip,
+        ip_addr=ip_addr,
         port=56565,
     )

@@ -663,9 +663,9 @@ def send_psn_packet(
 
     Args:
         psn_packet (_type_): as bytes
-        mcast_ip (str, optional): Default "236.10.10.10".
-        ip_addr (str, optional): Default "127.0.0.1".
-        port (int, optional): Default to 56565.
+        mcast_ip (str, optional): multicastip. Default: "236.10.10.10"
+        ip_addr (str, optional): local ip. Default: 127.0.0.1
+        port (int, optional): udp port. Default: 56565
     """
     if mcast_ip:
         with multicast_expert.McastTxSocket(
@@ -673,5 +673,5 @@ def send_psn_packet(
         ) as mcast_tx_sock:
             mcast_tx_sock.sendto(psn_packet, (mcast_ip, port))
     else:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(psn_packet, (ip_addr, port))
