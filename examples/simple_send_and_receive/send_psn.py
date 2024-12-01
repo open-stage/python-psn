@@ -142,11 +142,11 @@ while True:
         psn_info.info.timestamp = elapsed_time_us
         psn_info_packet_bytes = pypsn.prepare_psn_info_packet_bytes(psn_info)
 
-        pypsn.send_psn_packet_mc(
+        pypsn.send_psn_packet(
             psn_packet=psn_info_packet_bytes,
             mcast_ip="236.10.10.10",
             ip_addr=sys.argv[1],
-            mcast_port=56565,
+            port=56565,
         )
 
     psn_data.info.timestamp = elapsed_time_us
