@@ -33,31 +33,31 @@ psn_data = pypsn.PsnDataPacket(
                 tracker_id=tracker.tracker_id,
                 info=psn_info.info,
                 pos=pypsn.PsnVector3(
-                    x=0.0,
-                    y=0.0,
-                    z=0.0,
+                    x=1.0,
+                    y=1.0,
+                    z=1.0,
                 ),
                 speed=pypsn.PsnVector3(
-                    x=0.0,
-                    y=0.0,
-                    z=0.0,
+                    x=1.0,
+                    y=1.0,
+                    z=1.0,
                 ),
                 ori=pypsn.PsnVector3(
-                    x=0.0,
-                    y=0.0,
-                    z=0.0,
+                    x=1.0,
+                    y=1.0,
+                    z=1.0,
                 ),
                 accel=pypsn.PsnVector3(
-                    x=0.0,
-                    y=0.0,
-                    z=0.0,
+                    x=1.0,
+                    y=1.0,
+                    z=1.0,
                 ),
                 trgtpos=pypsn.PsnVector3(
-                    x=0.0,
-                    y=0.0,
-                    z=0.0,
+                    x=1.0,
+                    y=1.0,
+                    z=1.0,
                 ),
-                status=0,
+                status=0.5,
                 timestamp=psn_info.info.timestamp,
             )
             for tracker in psn_info.trackers
@@ -90,9 +90,17 @@ def test_data_data(pypsn_module):
     """Test position"""
     hexdata = get_test_data()
     data = pypsn_module.parse_psn_packet(hexdata)
-    test_vector = pypsn_module.PsnVector3(0.0, 0.0, 0.0)
+    test_vector = pypsn_module.PsnVector3(1.0, 1.0, 1.0)
     if isinstance(data, pypsn_module.PsnDataPacket):
-        assert test_vector == data.trackers[0].pos
+        for tracker_id in range(0, 7):
+            assert test_vector == data.trackers[tracker_id].pos
+            assert test_vector == data.trackers[tracker_id].ori
+            assert test_vector == data.trackers[tracker_id].speed
+            assert test_vector == data.trackers[tracker_id].accel
+            assert test_vector == data.trackers[tracker_id].trgtpos
+            assert 0.5 == data.trackers[tracker_id].status
+            assert 1312 == data.trackers[tracker_id].timestamp
+            assert tracker_id == data.trackers[tracker_id].tracker_id
 
 
 def test_data_info(pypsn_module):
@@ -128,4 +136,8 @@ def test_info_data(pypsn_module):
     hexdata = get_test_info()
     data = pypsn_module.parse_psn_packet(hexdata)
     if isinstance(data, pypsn_module.PsnInfoPacket):
-        assert data.trackers[0].tracker_name == b"tracker_0"
+        for tracker_id in range(0, 7):
+            assert tracker_id == data.trackers[tracker_id].tracker_id
+            assert ("tracker_" + str(tracker_id)).encode("UTF-8") == data.trackers[
+                tracker_id
+            ].tracker_name
