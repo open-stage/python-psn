@@ -25,6 +25,7 @@ python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs
 
 ## Usage
 
+### Receiving PSN data
 ```python
 import pypsn
 
@@ -46,14 +47,53 @@ receiver.start()  # start the receiving thread
 receiver.stop() # stop receiving
 
 ```
+
+### Senfing PSN data
+```python
+import pypsn
+
+# create a psn_info object with appropriate data
+psn_info = pypsn.PsnInfoPacket(
+    info=pypsn.PsnInfo(
+        timestamp=1312,
+        version_high=2,
+        version_low=0,
+        frame_id=1,
+        packet_count=1,
+    ),
+    name="system_name_001",
+    trackers=(
+        [
+            pypsn.PsnTrackerInfo(
+                tracker_id=i,
+                tracker_name="tracker_" + str(i),
+            )
+            for i in range(0, 8))
+        ]
+    ),
+)
+
+# convert the object to a byte string
+psn_info_packet_bytes = pypsn.prepare_psn_info_packet_bytes(psn_info)
+
+# send the PSN info via multicast
+pypsn.send_psn_packet(
+    psn_packet=psn_info_packet_bytes,
+    mcast_ip="236.10.10.10",
+    ip_addr="192.168.1.42",
+    mcast_port=56565,
+)
+
+```
 See examples folder for some more examples.
 
 ## Development, status
 
 - Supporting PSN V2
-- Parsing and sending (via [Multicast Expert](https://github.com/multiplemonomials/multicast_expert))
+- Parsing and sending (via [Multicast Expert](https://github.com/multiplemonomials/multicast_expert)) or via Unicast
 - Using threading module
 - Linux (Rpi OS incl.), Windows and macOS tested
+- PSN messages recognized by GrandMa3 2.1
 - Typed, no-strict
 - Initial pytest testing provided together with CI/CD setup
 

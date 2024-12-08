@@ -15,7 +15,9 @@ __version__ = "0.2.4"
 
 
 class PsnVector3:
-    """_summary_"""
+    """
+    PSN vector variable structure
+    """
 
     def __init__(self, x: float, y: float, z: float):
         self.x = x
@@ -33,7 +35,9 @@ class PsnVector3:
 
 
 class PsnInfo:
-    """_summary_"""
+    """
+    PSN info packet variable structure
+    """
 
     def __init__(
         self,
@@ -51,7 +55,9 @@ class PsnInfo:
 
 
 class PsnTrackerInfo:
-    """_summary_"""
+    """
+    PSN tracker info variable structure
+    """
 
     def __init__(self, tracker_id: int, tracker_name: str):
         self.tracker_id = tracker_id
@@ -59,7 +65,9 @@ class PsnTrackerInfo:
 
 
 class PsnTracker:
-    """_summary_"""
+    """
+    PSN tracker data variable structure
+    """
 
     def __init__(
         self,
@@ -85,7 +93,9 @@ class PsnTracker:
 
 
 class PsnDataPacket:
-    """_summary_"""
+    """
+    PSN data packet variable structure
+    """
 
     def __init__(self, info: "PsnInfo", trackers: List["PsnTracker"]):
         self.info = info
@@ -93,7 +103,9 @@ class PsnDataPacket:
 
 
 class PsnInfoPacket:
-    """_summary_"""
+    """
+    PSN info packet variable structure
+    """
 
     def __init__(
         self,
@@ -107,10 +119,8 @@ class PsnInfoPacket:
 
 
 class PsnV1Chunk(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    V1 main PSN ID
     """
 
     PSN_V1_INFO_PACKET = 0x503C
@@ -118,10 +128,8 @@ class PsnV1Chunk(IntEnum):
 
 
 class PsnV2Chunck(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    V2 main PSN ID
     """
 
     PSN_INFO_PACKET = 0x6756
@@ -129,10 +137,8 @@ class PsnV2Chunck(IntEnum):
 
 
 class PsnInfoChunk(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    PSN ID for info packet
     """
 
     PSN_INFO_PACKET_HEADER = 0x0000
@@ -141,10 +147,8 @@ class PsnInfoChunk(IntEnum):
 
 
 class PsnDataChunk(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    PSN ID for data packet
     """
 
     PSN_DATA_PACKET_HEADER = 0x0000
@@ -152,20 +156,16 @@ class PsnDataChunk(IntEnum):
 
 
 class PasnTrackerListChunk(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    PSN ID for trackers name
     """
 
     PSN_INFO_TRACKER_NAME = 0x0000
 
 
 class PsnTrackerChunk(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    PSN ID for trackers coordinates
     """
 
     PSN_DATA_TRACKER_POS = 0x0000
@@ -176,10 +176,8 @@ class PsnTrackerChunk(IntEnum):
 
 
 class PsnTrackerChunkInfo(IntEnum):
-    """_summary_
-
-    Args:
-        IntEnum (_type_): _description_
+    """
+    PSN ID for trackers status and timestamp
     """
 
     PSN_DATA_TRACKER_STATUS = 0x0003
@@ -187,15 +185,16 @@ class PsnTrackerChunkInfo(IntEnum):
 
 
 def join_multicast_windows(mcast_grp, mcast_port, if_ip):
-    """_summary_
+    """
+        Join multicast on Windows
 
     Args:
-        mcast_grp (_type_): _description_
-        mcast_port (_type_): _description_
-        if_ip (_type_): _description_
+        mcast_grp (str): multicast ip
+        mcast_port (str): multicast port
+        if_ip (str): iface ip
 
     Returns:
-        _type_: _description_
+        socket
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -209,15 +208,16 @@ def join_multicast_windows(mcast_grp, mcast_port, if_ip):
 
 
 def join_multicast_posix(mcast_grp, mcast_port, if_ip):
-    """_summary_
+    """
+        Join multicast on posix OS
 
     Args:
-        mcast_grp (_type_): _description_
-        mcast_port (_type_): _description_
-        if_ip (_type_): _description_
+        mcast_grp (str): multicast ip
+        mcast_port (str): multicast port
+        if_ip (str): iface ip
 
     Returns:
-        _type_: _description_
+        socket
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     try:
@@ -238,10 +238,11 @@ def join_multicast_posix(mcast_grp, mcast_port, if_ip):
 
 
 def determine_os():
-    """_summary_
+    """
+        Get local OS
 
     Returns:
-        _type_: _description_
+        OS name
     """
     if os.name == "nt":
         return str(os.name)
@@ -254,10 +255,8 @@ def determine_os():
 
 
 class Receiver(Thread):
-    """_summary_
-
-    Args:
-        Thread (_type_): _description_
+    """
+    PSN receiver class
     """
 
     def __init__(self, callback, ip_addr="0.0.0.0", mcast_port=56565, timeout=2):
@@ -269,14 +268,18 @@ class Receiver(Thread):
             self.socket.settimeout(timeout)
 
     def stop(self):
-        """_summary_"""
+        """
+        Stop listening.
+        """
         self.running = False
         if self.socket is not None:
             self.socket.close()
         self.join()
 
     def run(self):
-        """_summary_"""
+        """
+        Start listnening.
+        """
         data = ""
         if self.socket is None:
             return
@@ -291,14 +294,15 @@ class Receiver(Thread):
 
 
 def get_socket(ip_addr, mcast_port):
-    """_summary_
+    """
+        Listening for incomming psn packets
 
     Args:
-        ip_addr (_type_): _description_
-        mcast_port (_type_): _description_
+        ip_addr (str): iface ip
+        mcast_port (str): multicast port
 
     Returns:
-        _type_: _description_
+        socket
     """
     mcast_grp = "236.10.10.10"
     sock = None
@@ -314,13 +318,14 @@ def get_socket(ip_addr, mcast_port):
 
 
 def parse_psn_packet(buffer):
-    """_summary_
+    """
+        Parse received data buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        psn packet
     """
     psn_id = unpack("<H", buffer[0:2])[0]
     if psn_id in iter(PsnV1Chunk):
@@ -334,13 +339,14 @@ def parse_psn_packet(buffer):
 
 
 def parse_chunk(buffer):
-    """_summary_
+    """
+        Parse received psn chunk
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        chunk_id, data, and rest
     """
     chunk_id, data_field = unpack("<HH", buffer[0:4])
     data_len = data_field & 0x7FFF
@@ -353,13 +359,14 @@ def parse_chunk(buffer):
 
 
 def parse_info(buffer):
-    """_summary_
+    """
+        Parse received info buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        psn packet
     """
     info = None
     system_name = None
@@ -382,13 +389,14 @@ def parse_info(buffer):
 
 
 def parse_data(buffer):
-    """_summary_
+    """
+        Parse received data buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        psn packet
     """
     info = None
     trackers = None
@@ -408,13 +416,14 @@ def parse_data(buffer):
 
 
 def parse_header(buffer):
-    """_summary_
+    """
+        Parse received header buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        infos header
     """
     (timestamp, version_high, version_low, frame_id, packet_count) = unpack(
         "<QBBBB", buffer
@@ -426,13 +435,14 @@ def parse_header(buffer):
 
 
 def parse_system_name(buffer):
-    """_summary_
+    """
+        Parse received system name buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        system name
     """
     # TODO: may cause unicode issues?
     system_name = buffer
@@ -440,13 +450,14 @@ def parse_system_name(buffer):
 
 
 def parse_info_tracker_list(buffer):
-    """_summary_
+    """
+        Parse received tracker infos buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        trackers infos
     """
     trackers: List["PsnTrackerInfo"] = []
     while buffer:
@@ -464,13 +475,14 @@ def parse_info_tracker_list(buffer):
 
 
 def parse_data_tracker_list(buffer):
-    """_summary_
+    """
+        Parse received trackers data buffer
 
     Args:
-        buffer (_type_): _description_
+        buffer (bytes): Received PSN data
 
     Returns:
-        _type_: _description_
+        trackers data
     """
     trackers: List["PsnTracker"] = []
     while buffer:
@@ -498,64 +510,63 @@ def parse_data_tracker_list(buffer):
                     status = unpack("<f", data_buffer)[0]
                     tracker.status = status
                 elif chunk_id == PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP:
-                    timestamp = unpack("<L", data_buffer[:4])[0]
+                    timestamp = unpack("<Q", data_buffer[:8])[0]
                     tracker.timestamp = timestamp
         trackers.append(tracker)
     return trackers
 
 
 def prepare_psn_info_packet_bytes(info_packet: PsnInfoPacket):
-    """_summary_
+    """
+        Converts info variables to bytes
 
     Args:
-        info_packet (PsnInfoPacket): _description_
+        info_packet (PsnInfoPacket)
 
     Returns:
-        _type_: _description_
+        Pasn data as bytes.
     """
     trackers_packet_bytes = b""
     tot_enc_tracker_name_length = 0
 
     for tracker in info_packet.trackers:
-        encoded_tracker_name = str.encode(tracker.tracker_name)
+        encoded_tracker_name = tracker.tracker_name.encode("utf-8")
         tracker_name_len = len(encoded_tracker_name)
 
-        tot_enc_tracker_name_length = (
-            tot_enc_tracker_name_length + tracker_name_len + 16
-        )
+        tot_enc_tracker_name_length = tot_enc_tracker_name_length + tracker_name_len + 8
         trackers_packet_bytes = trackers_packet_bytes + pack(
             "<HHHH" + str(tracker_name_len) + "s",
             tracker.tracker_id,
-            tracker_name_len + 4,
+            tracker_name_len + 4 | (1 << 15),
             PasnTrackerListChunk.PSN_INFO_TRACKER_NAME,
-            tracker_name_len,
+            tracker_name_len | (1 << 15),
             encoded_tracker_name,
         )
     trackers_packet_bytes = (
         pack(
             "<HH",
             PsnInfoChunk.PSN_INFO_TRACKER_LIST,
-            4 + tot_enc_tracker_name_length + 4,
+            tot_enc_tracker_name_length | (1 << 15),
         )
         + trackers_packet_bytes
     )
 
-    encoded_system_name = str.encode(info_packet.name)
+    encoded_system_name = info_packet.name.encode("utf-8")
     system_name_lenght = len(encoded_system_name)
     info_packet_bytes = (
         pack(
             ("<HHHHQBBBBHH" + str(system_name_lenght) + "s"),
             PsnV2Chunck.PSN_INFO_PACKET,
-            (20 + system_name_lenght + tot_enc_tracker_name_length),
+            (24 + system_name_lenght + tot_enc_tracker_name_length) | (1 << 15),
             PsnInfoChunk.PSN_INFO_PACKET_HEADER,
-            12,
+            12 | (1 << 15),
             info_packet.info.timestamp,
             info_packet.info.version_high,
             info_packet.info.version_low,
             info_packet.info.frame_id,
             info_packet.info.packet_count,
             PsnInfoChunk.PSN_INFO_SYSTEM_NAME,
-            system_name_lenght,
+            system_name_lenght | (1 << 15),
             encoded_system_name,
         )
         + trackers_packet_bytes
@@ -565,59 +576,62 @@ def prepare_psn_info_packet_bytes(info_packet: PsnInfoPacket):
 
 
 def prepare_psn_data_packet_bytes(data_packet: PsnDataPacket):
-    """_summary_
+    """
+        Converts data variables to bytes
 
     Args:
-        data_packet (PsnDataPacket): _description_
+        data_packet (PsnDataPacket)
 
     Returns:
-        _type_: _description_
+        Pasn data as bytes.
     """
     trackers_packet_bytes = b""
     tot_enc_tracker_length = 0
 
     for tracker in data_packet.trackers:
-        tot_enc_tracker_length = (
-            tot_enc_tracker_length + 100  # (10 * 4) + (5 * 12)
-        )
+        tot_enc_tracker_length = tot_enc_tracker_length + 104
         trackers_packet_bytes = trackers_packet_bytes + pack(
-            "<HHHHfffHHfffHHfffHHfffHHfffHHfHHL",
+            "<HHHHfffHHfffHHfffHHfHHfffHHfffHHQ",
             tracker.tracker_id,
-            96,  # (9 * 4) + (5 * 12)
+            100 | (1 << 15),  # 28 (H) + 64 (f) + 8 (Q)
             PsnTrackerChunk.PSN_DATA_TRACKER_POS,
-            12,
+            12 | (1 << 15),
             tracker.pos.x,
             tracker.pos.y,
             tracker.pos.z,
-            PsnTrackerChunk.PSN_DATA_TRACKER_ORI,
-            12,
-            tracker.ori.x,
-            tracker.ori.y,
-            tracker.ori.z,
-            PsnTrackerChunk.PSN_DATA_TRACKER_ACCEL,
-            12,
-            tracker.accel.x,
-            tracker.accel.y,
-            tracker.accel.z,
             PsnTrackerChunk.PSN_DATA_TRACKER_SPEED,
-            12,
+            12 | (1 << 15),
             tracker.speed.x,
             tracker.speed.y,
             tracker.speed.z,
+            PsnTrackerChunk.PSN_DATA_TRACKER_ORI,
+            12 | (1 << 15),
+            tracker.ori.x,
+            tracker.ori.y,
+            tracker.ori.z,
+            PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS,
+            4 | (1 << 15),
+            tracker.status,
+            PsnTrackerChunk.PSN_DATA_TRACKER_ACCEL,
+            12 | (1 << 15),
+            tracker.accel.x,
+            tracker.accel.y,
+            tracker.accel.z,
             PsnTrackerChunk.PSN_DATA_TRACKER_TRGTPOS,
-            12,
+            12 | (1 << 15),
             tracker.trgtpos.x,
             tracker.trgtpos.y,
             tracker.trgtpos.z,
-            PsnTrackerChunkInfo.PSN_DATA_TRACKER_STATUS,
-            4,
-            tracker.status,
             PsnTrackerChunkInfo.PSN_DATA_TRACKER_TIMESTAMP,
-            4,
+            8 | (1 << 15),
             tracker.timestamp,
         )
     trackers_packet_bytes = (
-        pack("<HH", PsnDataChunk.PSN_DATA_TRACKER_LIST, 4 + tot_enc_tracker_length)
+        pack(
+            "<HH",
+            PsnDataChunk.PSN_DATA_TRACKER_LIST,
+            tot_enc_tracker_length | (1 << 15),
+        )
         + trackers_packet_bytes
     )
 
@@ -625,9 +639,9 @@ def prepare_psn_data_packet_bytes(data_packet: PsnDataPacket):
         pack(
             ("<HHHHQBBBB"),
             PsnV2Chunck.PSN_DATA_PACKET,
-            (20 + tot_enc_tracker_length),
+            (16 + 4 + tot_enc_tracker_length) | (1 << 15),
             PsnDataChunk.PSN_DATA_PACKET_HEADER,
-            12,
+            12 | (1 << 15),
             data_packet.info.timestamp,
             data_packet.info.version_high,
             data_packet.info.version_low,
@@ -641,17 +655,23 @@ def prepare_psn_data_packet_bytes(data_packet: PsnDataPacket):
 
 
 def send_psn_packet(
-    psn_packet, mcast_ip="236.10.10.10", ip_addr="0.0.0.0", mcast_port=56565
+    psn_packet, mcast_ip="236.10.10.10", ip_addr="127.0.0.1", port=56565
 ):
-    """_summary_
+    """Send psn packet.
+        If mcast_ip is specified, it does via multicast with the help
+        of multicast_expert. If not, it does via simple unicast.
 
     Args:
-        psn_packet (_type_): _description_
-        mcast_ip (str, optional): _description_. Default '236.10.10.10'.
-        ip_addr (str, optional): _description_. Default "0.0.0.0".
-        mcast_port (int, optional): _description_. Default to 56565.
+        psn_packet (_type_): as bytes
+        mcast_ip (str, optional): multicastip. Default: "236.10.10.10"
+        ip_addr (str, optional): local ip. Default: 127.0.0.1
+        port (int, optional): udp port. Default: 56565
     """
-    with multicast_expert.McastTxSocket(
-        socket.AF_INET, mcast_ips=[mcast_ip], iface_ip=ip_addr
-    ) as mcast_tx_sock:
-        mcast_tx_sock.sendto(psn_packet, (mcast_ip, mcast_port))
+    if mcast_ip:
+        with multicast_expert.McastTxSocket(
+            socket.AF_INET, mcast_ips=[mcast_ip], iface_ip=ip_addr
+        ) as mcast_tx_sock:
+            mcast_tx_sock.sendto(psn_packet, (mcast_ip, port))
+    else:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(psn_packet, (ip_addr, port))
