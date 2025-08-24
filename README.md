@@ -1,16 +1,15 @@
 # python-psn
 
-Pure Python parsing library for PSN V2 - [PosiStageNet](https://posistage.net/)
+Pure Python parsing library for PSN V2 - [PosiStageNet](https://posistage.net/),[Official PSN specification](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
 
-[Official PSN specification](https://github.com/vyv/psn-cpp/blob/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf)
+This library is used for example by [BlenderDMX](https://blenderdmx.eu)
+([BlenderDMX on GitHub](https://github.com/open-stage/blender-dmx)).
 
-[Source code](https://github.com/open-stage/python-psn)
-
-[PyPi page](https://pypi.org/project/pypsn/)
+[GitHub Page](https://github.com/open-stage/python-psn), [PyPi page](https://pypi.org/project/pypsn/)
 
 [![Pytest](https://github.com/open-stage/python-psn/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/open-stage/python-psn/actions/workflows/run-tests.yaml)
-
 [![Check links in markdown](https://github.com/open-stage/python-psn/actions/workflows/check-links.yaml/badge.svg)](https://github.com/open-stage/python-psn/actions/workflows/check-links.yaml)
+![GitHub Tag](https://img.shields.io/github/v/tag/open-stage/python-psn)
 
 ## Installation
 
@@ -48,7 +47,7 @@ receiver.stop() # stop receiving
 
 ```
 
-### Senfing PSN data
+### Sending PSN data
 ```python
 import pypsn
 
@@ -117,3 +116,17 @@ mypy pypsn/*py  --pretty  --no-strict-optional
 pytest --mypy -m mypy pypsn/*py
 ```
 
+## Citation
+
+If you use this library in your research, publication, or software project,
+please cite it as follows:
+
+```bibtex
+@software{pypsn2025,
+  title        = {pyPSN: Python Library for PosiStageNet},
+  author       = {{OpenStage}},
+  year         = {2025},
+  version      = {0.2.3},
+  url          = {https://github.com/open-stage/python-psn}
+}
+```
