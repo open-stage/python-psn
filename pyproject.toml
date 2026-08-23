@@ -30,6 +30,11 @@ packages = ["pypsn"]
 [tool.setuptools.dynamic]
 version = {attr = "pypsn.__version__"}
 
+[dependency-groups]
+dev = [
+    "ruff>=0.16.4",
+]
+
 [project.urls]
 Repository = "https://github.com/open-stage/python-psn"
 Changelog = "https://github.com/open-stage/python-psn/blob/master/CHANGELOG.md"

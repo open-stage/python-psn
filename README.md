@@ -28,23 +28,28 @@ python -m pip install https://codeload.github.com/open-stage/python-psn/zip/refs
 ```python
 import pypsn
 
+
 # define a callback function
 def callback_function(data):
-    if isinstance(data, pypsn_module.psn_data_packet): # packet type: psn.psn_data_packet
-        for tracker in data.trackers: # loop through all trackers
-            print(tracker.pos) # print the received coordinates
+    if isinstance(
+        data, pypsn_module.psn_data_packet
+    ):  # packet type: psn.psn_data_packet
+        for tracker in data.trackers:  # loop through all trackers
+            print(tracker.pos)  # print the received coordinates
 
-    if isinstance(data, pypsn_module.psn_info_packet): # packet type: psn.psn_info_packet
-        print(data.name) # print server name
-        for tracker in data.trackers: # loop through all trackers
-            print(tracker.tracker_name) # print the received tracker name
+    if isinstance(
+        data, pypsn_module.psn_info_packet
+    ):  # packet type: psn.psn_info_packet
+        print(data.name)  # print server name
+        for tracker in data.trackers:  # loop through all trackers
+            print(tracker.tracker_name)  # print the received tracker name
+
 
 # provide a callback function and an IP address
 receiver = pypsn.receiver(callback_function)
 receiver.start()  # start the receiving thread
 
-receiver.stop() # stop receiving
-
+receiver.stop()  # stop receiving
 ```
 
 ### Sending PSN data
